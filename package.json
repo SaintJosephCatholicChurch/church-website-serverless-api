@@ -1,0 +1,18 @@
+{
+  "name": "daily-readings-serverless",
+  "version": "1.0.0",
+  "description": "",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SaintJosephCatholicChurch/daily-readings-serverless.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/SaintJosephCatholicChurch/daily-readings-serverless/issues"
+  },
+  "homepage": "https://github.com/SaintJosephCatholicChurch/daily-readings-serverless#readme",
+  "dependencies": {
+    "node-fetch": "3.3.0"
+  }
+}
