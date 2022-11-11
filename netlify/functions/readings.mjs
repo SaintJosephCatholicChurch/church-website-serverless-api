@@ -13,7 +13,7 @@ export const handler = async () => {
     statusCode: 200,
     body: await response.text(),
     headers: {
-      "access-control-allow-origin": "www.stjosephchurchbluffton.org",
+      "access-control-allow-origin": "https://www.stjosephchurchbluffton.org",
     },
   };
 };
