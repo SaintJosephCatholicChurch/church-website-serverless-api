@@ -12,5 +12,8 @@ export const handler = async () => {
   return {
     statusCode: 200,
     body: await response.text(),
+    headers: {
+      "access-control-allow-origin": "www.stjosephchurchbluffton.org",
+    },
   };
 };
