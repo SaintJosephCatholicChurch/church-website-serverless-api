@@ -31,7 +31,7 @@ export const handler = async (_event, context) => {
 
   return {
     statusCode: 200,
-    body: JSON.stringify({ isStreaming, url, path: context.path }),
+    body: JSON.stringify({ isStreaming, url, path: context.path, test: 'fish' }),
     headers: {
       "access-control-allow-origin": "https://www.stjosephchurchbluffton.org",
     },
