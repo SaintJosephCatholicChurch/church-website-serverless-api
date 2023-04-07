@@ -18,14 +18,14 @@ export const handler = async (event) => {
     isStreaming = canonicalURL.includes("/watch?v=");
 
     if (isStreaming) {
-      url = canonicalURL;
+      url = canonicalURL.replace('/watch?v=', '/embed/');
     } else {
       const response2 = await fetch(
         `https://www.youtube.com/feeds/videos.xml?channel_id=${channel}&orderby=published`
       );
       const parser = new XMLParser();
       let jObj = parser.parse(await response2.text());
-      url = `https://www.youtube.com/watch?v=${jObj.feed.entry[0]["yt:videoId"]}`;
+      url = `https://www.youtube.com/embed/${jObj.feed.entry[0]["yt:videoId"]}`;
     }
   } catch (e) {
     console.error(e);
