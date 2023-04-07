@@ -2,7 +2,7 @@ import fetch from "node-fetch";
 import { parse } from "node-html-parser";
 import { XMLParser } from 'fast-xml-parser';
 
-export const handler = async (_event, context) => {
+export const handler = async (event) => {
   let isStreaming = false;
   let url = "";
   try {
@@ -31,7 +31,7 @@ export const handler = async (_event, context) => {
 
   return {
     statusCode: 200,
-    body: JSON.stringify({ isStreaming, url, path: context, test: 'fish' }),
+    body: JSON.stringify({ isStreaming, url, path: event.path, test: 'fish' }),
     headers: {
       "access-control-allow-origin": "https://www.stjosephchurchbluffton.org",
     },
