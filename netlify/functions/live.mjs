@@ -33,7 +33,7 @@ export const handler = async (event) => {
 
   return {
     statusCode: 200,
-    body: JSON.stringify({ isStreaming, url, channel }),
+    body: JSON.stringify({ isStreaming, url }),
     headers: {
       "access-control-allow-origin": "https://www.stjosephchurchbluffton.org",
     },
