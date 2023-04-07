@@ -3,11 +3,13 @@ import { parse } from "node-html-parser";
 import { XMLParser } from 'fast-xml-parser';
 
 export const handler = async (event) => {
+  const channel = event.path.replace('/.netlify/functions/live/', '');
+
   let isStreaming = false;
   let url = "";
   try {
     const response = await fetch(
-      `https://youtube.com/channel/UCEbcH06ZOVz8GhA8fbRYusg/live`
+      `https://youtube.com/channel/${channel}/live`
     );
     const text = await response.text();
     const html = parse(text);
@@ -19,7 +21,7 @@ export const handler = async (event) => {
       url = canonicalURL;
     } else {
       const response2 = await fetch(
-        `https://www.youtube.com/feeds/videos.xml?channel_id=UCEbcH06ZOVz8GhA8fbRYusg&orderby=published`
+        `https://www.youtube.com/feeds/videos.xml?channel_id=${channel}&orderby=published`
       );
       const parser = new XMLParser();
       let jObj = parser.parse(await response2.text());
@@ -31,7 +33,7 @@ export const handler = async (event) => {
 
   return {
     statusCode: 200,
-    body: JSON.stringify({ isStreaming, url, path: event.path, test: 'fish' }),
+    body: JSON.stringify({ isStreaming, url, channel }),
     headers: {
       "access-control-allow-origin": "https://www.stjosephchurchbluffton.org",
     },
