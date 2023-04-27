@@ -113,7 +113,7 @@ export const handler = async (event) => {
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36"
       );
 
-      await page.goto(`https://www.facebook.com/${pageOrChannel}/videos`, { waitUntil: "networkidle0" });
+      await page.goto(`https://www.facebook.com/${pageOrChannel}/videos`, { waitUntil: "networkidle0", timeout: 0 });
 
       // Set screen size
       await page.setViewport({ width: 1080, height: 1024 });
