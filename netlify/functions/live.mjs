@@ -56,8 +56,34 @@ export const handler = async (event) => {
 
   if (provider === "facebook") {
     try {
+      console.log(chromium.args);
       const browser = await puppeteer.launch({
-        args: chromium.args,
+        args: [
+          "--allow-running-insecure-content",
+          "--autoplay-policy=user-gesture-required",
+          "--disable-component-update",
+          "--disable-domain-reliability",
+          "--disable-features=AudioServiceOutOfProcess,IsolateOrigins,site-per-process",
+          "--disable-print-preview",
+          "--disable-setuid-sandbox",
+          "--disable-site-isolation-trials",
+          "--disable-speech-api",
+          "--disable-web-security",
+          "--disk-cache-size=33554432",
+          "--enable-features=SharedArrayBuffer",
+          "--hide-scrollbars",
+          "--ignore-gpu-blocklist",
+          "--in-process-gpu",
+          "--mute-audio",
+          "--no-default-browser-check",
+          "--no-pings",
+          "--no-sandbox",
+          "--no-zygote",
+          "--use-gl=swiftshader",
+          "--window-size=1920,1080",
+          "--single-process",
+          "--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:73.0) Getcko/20100101 Firefox/73.0",
+        ],
         executablePath: process.env.CHROME_EXECUTABLE_PATH || (await chromium.executablePath),
         headless: true,
       });
@@ -82,8 +108,6 @@ export const handler = async (event) => {
       const match = new RegExp(
         `https:\/\/www\.facebook\.com\/${pageOrChannel}\/videos\/[a-zA-Z0-9_-]+\/([0-9]+)\/`
       ).exec(data);
-
-      console.log("HTML", data);
 
       let rawUrl;
       if (match && match.length >= 2) {
