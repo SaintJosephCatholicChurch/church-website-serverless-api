@@ -120,7 +120,6 @@ export const handler = async (event) => {
       await page.setViewport({ width: 1080, height: 1024 });
 
       const data = await page.evaluate(() => document.querySelector("*").outerHTML);
-      console.log("HTML", data);
 
       const match = new RegExp(
         `https:\/\/www\.facebook\.com\/${pageOrChannel}\/videos\/[a-zA-Z0-9_-]+\/([0-9]+)\/`
