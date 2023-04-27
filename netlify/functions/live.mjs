@@ -1,7 +1,7 @@
 import fetch from "node-fetch";
 import { parse } from "node-html-parser";
 import { XMLParser } from "fast-xml-parser";
-import chromium from "chrome-aws-lambda";
+import chromium from "chrome-aws-lambda-patch-node-16";
 import puppeteer from "puppeteer-core";
 
 export const handler = async (event) => {
