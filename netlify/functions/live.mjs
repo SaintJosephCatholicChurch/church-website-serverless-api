@@ -56,7 +56,6 @@ export const handler = async (event) => {
 
   if (provider === "facebook") {
     try {
-      console.log(chromium.args);
       const browser = await puppeteer.launch({
         args: [
           "--allow-running-insecure-content",
@@ -113,12 +112,15 @@ export const handler = async (event) => {
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36"
       );
 
-      await page.goto(`https://www.facebook.com/${pageOrChannel}/videos`, { waitUntil: "networkidle2", timeout: 0 });
+      await page.goto(`https://www.facebook.com/${pageOrChannel}/videos`, { waitUntil: "domcontentloaded" });
+
+      await page.waitForFunction('document.querySelector("body").innerText.includes("Videos")');
 
       // Set screen size
       await page.setViewport({ width: 1080, height: 1024 });
 
       const data = await page.evaluate(() => document.querySelector("*").outerHTML);
+      console.log("HTML", data);
 
       const match = new RegExp(
         `https:\/\/www\.facebook\.com\/${pageOrChannel}\/videos\/[a-zA-Z0-9_-]+\/([0-9]+)\/`
