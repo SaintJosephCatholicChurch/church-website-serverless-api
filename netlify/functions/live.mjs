@@ -63,6 +63,15 @@ export const handler = async (event) => {
       });
       const page = await browser.newPage();
 
+      await page.evaluateOnNewDocument(() => {
+        Object.defineProperty(navigator, "platform", { get: () => "Win32" });
+        Object.defineProperty(navigator, "productSub", { get: () => "20100101" });
+        Object.defineProperty(navigator, "vendor", { get: () => "" });
+        Object.defineProperty(navigator, "oscpu", { get: () => "Windows NT 10.0; Win64; x64" });
+      });
+
+      await page.setUserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:73.0) Getcko/20100101 Firefox/73.0");
+
       await page.goto(`https://www.facebook.com/${pageOrChannel}/videos`);
 
       // Set screen size
