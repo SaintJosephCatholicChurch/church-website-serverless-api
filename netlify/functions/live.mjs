@@ -71,8 +71,6 @@ export const handler = async (event) => {
           "--disk-cache-size=33554432",
           "--enable-features=SharedArrayBuffer",
           "--hide-scrollbars",
-          "--ignore-gpu-blocklist",
-          "--in-process-gpu",
           "--mute-audio",
           "--no-default-browser-check",
           "--no-pings",
@@ -81,8 +79,12 @@ export const handler = async (event) => {
           "--use-gl=swiftshader",
           "--window-size=1920,1080",
           "--single-process",
+          '--disable-gpu',
+          '--disable-dev-shm-usage',
+          '--no-first-run',
           "--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36",
         ],
+        defaultViewport: chromium.defaultViewport,
         executablePath: process.env.CHROME_EXECUTABLE_PATH || (await chromium.executablePath),
         headless: true,
       });
@@ -115,9 +117,6 @@ export const handler = async (event) => {
       await page.goto(`https://www.facebook.com/${pageOrChannel}/videos`, { waitUntil: "domcontentloaded" });
 
       await page.waitForFunction('document.querySelector("body").innerText.includes("Videos")');
-
-      // Set screen size
-      await page.setViewport({ width: 1080, height: 1024 });
 
       const data = await page.evaluate(() => document.querySelector("*").outerHTML);
 
