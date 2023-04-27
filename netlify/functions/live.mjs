@@ -82,7 +82,7 @@ export const handler = async (event) => {
 
       const f = await page.$(`a[href='${rawUrl}']`);
       const text = await (await f?.getProperty("textContent"))?.jsonValue();
-      isStreaming = text.includes("LIVE");
+      isStreaming = text?.includes("LIVE") ?? false;
 
       await browser.close();
     } catch (e) {
