@@ -3,9 +3,6 @@
   functions = "netlify/functions"
   publish = "public"
 
-[build.environment]
-  AWS_LAMBDA_JS_RUNTIME = "nodejs12.x"
-
 [functions]
   node_bundler = "esbuild" 
 
