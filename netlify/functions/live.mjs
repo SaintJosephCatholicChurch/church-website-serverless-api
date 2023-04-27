@@ -73,11 +73,14 @@ export const handler = async (event) => {
       const match = new RegExp(
         `https:\/\/www\.facebook\.com\/${pageOrChannel}\/videos\/[a-zA-Z0-9_-]+\/([0-9]+)\/`
       ).exec(data);
+
+      let rawUrl;
       if (match && match.length >= 2) {
-        url = match[0];
+        rawUrl = match[0];
+        url = `https://www.facebook.com/plugins/video.php?href=${encodeURIComponent(match[0])}&show_text=false`;
       }
 
-      const f = await page.$(`a[href='${url}']`);
+      const f = await page.$(`a[href='${rawUrl}']`);
       const text = await (await f?.getProperty("textContent"))?.jsonValue();
       isStreaming = text.includes("LIVE");
 
