@@ -74,6 +74,8 @@ export const handler = async (event) => {
         `https:\/\/www\.facebook\.com\/${pageOrChannel}\/videos\/[a-zA-Z0-9_-]+\/([0-9]+)\/`
       ).exec(data);
 
+      console.log("HTML", data);
+
       let rawUrl;
       if (match && match.length >= 2) {
         rawUrl = match[0];
