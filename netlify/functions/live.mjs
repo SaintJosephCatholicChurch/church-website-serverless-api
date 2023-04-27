@@ -82,7 +82,7 @@ export const handler = async (event) => {
           "--use-gl=swiftshader",
           "--window-size=1920,1080",
           "--single-process",
-          "--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:73.0) Getcko/20100101 Firefox/73.0",
+          "--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36",
         ],
         executablePath: process.env.CHROME_EXECUTABLE_PATH || (await chromium.executablePath),
         headless: true,
@@ -90,15 +90,30 @@ export const handler = async (event) => {
       const page = await browser.newPage();
 
       await page.evaluateOnNewDocument(() => {
+        Object.defineProperty(navigator, "appCodeName", { get: () => "Mozilla" });
+        Object.defineProperty(navigator, "appName", { get: () => "Netscape" });
+        Object.defineProperty(navigator, "appVersion", {
+          get: () =>
+            "5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36",
+        });
         Object.defineProperty(navigator, "platform", { get: () => "Win32" });
-        Object.defineProperty(navigator, "productSub", { get: () => "20100101" });
+        Object.defineProperty(navigator, "product", { get: () => "Gecko" });
+        Object.defineProperty(navigator, "productSub", { get: () => "20030107" });
         Object.defineProperty(navigator, "vendor", { get: () => "" });
         Object.defineProperty(navigator, "oscpu", { get: () => "Windows NT 10.0; Win64; x64" });
+        Object.defineProperty(navigator, "userAgent", {
+          get: () =>
+            "5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36",
+        });
+        Object.defineProperty(navigator, "vendor", { get: () => "Google Inc." });
+        Object.defineProperty(navigator, "vendorSub", { get: () => "" });
       });
 
-      await page.setUserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:73.0) Getcko/20100101 Firefox/73.0");
+      await page.setUserAgent(
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36"
+      );
 
-      await page.goto(`https://www.facebook.com/${pageOrChannel}/videos`);
+      await page.goto(`https://www.facebook.com/${pageOrChannel}/videos`, { waitUntil: "domcontentloaded" });
 
       // Set screen size
       await page.setViewport({ width: 1080, height: 1024 });
