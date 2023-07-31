@@ -6,13 +6,13 @@ export const handler = async () => {
     port: 465,
     secure: true,
     auth: {
-      user: "stjosephcatholicchurchbluffton@gmail.com",
+      user: "apikey",
       pass: process.env.SENDGRID_API_KEY,
     },
   });
 
   const info = await transporter.sendMail({
-    from: 'Saint Joseph Catholic Church Contact Form',
+    from: 'stjosephcatholicchurchbluffton@gmail.com',
     to: "stjosephcatholicchurchbluffton@gmail.com",
     subject: "Hello ✔",
     text: "Hello world?",
