@@ -13,7 +13,7 @@ export const handler = async () => {
 
   const info = await transporter.sendMail({
     from: 'no-reply@stjosephchurchbluffton.org',
-    to: "test-958986@test.mailgenius.com",
+    to: process.env.CONTACT_EMAIL,
     subject: "New Contact Form Submission",
     list: {
       unsubscribe: 'admin@stjosephchurchbluffton.org?subject=unsubscribe'
