@@ -2,20 +2,19 @@ import nodemailer from "nodemailer";
 
 export const handler = async () => {
   const transporter = nodemailer.createTransport({
-    host: "smtp.sendgrid.net",
+    host: "smtppro.zoho.com",
     port: 465,
     secure: true,
     auth: {
-      user: "apikey",
-      pass: process.env.SENDGRID_API_KEY,
+      user: process.env.ZOHO_USERNAME,
+      pass: process.env.ZOHO_PASSWORD,
     },
   });
 
   const info = await transporter.sendMail({
-    from: 'stjosephcatholicchurchbluffton@gmail.com',
+    from: 'no-reply@stjosephchurchbluffton.org',
     to: "test-144ff9@test.mailgenius.com",
-    subject: "Hello ✔",
-    text: "Hello world?",
+    subject: "New Contact Form Submission",
     html: `<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:o="urn:schemas-microsoft-com:office:office">
   <head>
