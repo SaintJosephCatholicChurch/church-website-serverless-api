@@ -46,7 +46,7 @@ export const handler = async (event) => {
     from: "no-reply@stjosephchurchbluffton.org",
     to: process.env.CONTACT_EMAIL,
     replyTo: body.email,
-    subject: "New Contact Form Submission",
+    subject: `New Contact Form Submission [${body.subject}]`,
     list: {
       unsubscribe: "admin@stjosephchurchbluffton.org?subject=unsubscribe",
     },
