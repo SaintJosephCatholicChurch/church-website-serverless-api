@@ -6,6 +6,9 @@ export const handler = async () => {
     return {
       statusCode: 500,
       body: "",
+      headers: {
+        "access-control-allow-origin": "https://www.stjosephchurchbluffton.org",
+      },
     };
   }
 
