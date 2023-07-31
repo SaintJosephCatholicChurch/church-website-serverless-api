@@ -1,6 +1,8 @@
 import nodemailer from "nodemailer";
 
-export const handler = async () => {
+export const handler = async (event) => {
+  const body = JSON.parse(event.body);
+
   const transporter = nodemailer.createTransport({
     host: "smtppro.zoho.com",
     port: 465,
@@ -14,6 +16,7 @@ export const handler = async () => {
   const info = await transporter.sendMail({
     from: 'no-reply@stjosephchurchbluffton.org',
     to: process.env.CONTACT_EMAIL,
+    replyTo: body.email,
     subject: "New Contact Form Submission",
     list: {
       unsubscribe: 'admin@stjosephchurchbluffton.org?subject=unsubscribe'
@@ -146,10 +149,10 @@ span.MsoHyperlinkFollowed {
                       <tr>
                       <td align="left" style="padding:0;Margin:0;padding-top:10px;padding-bottom:10px">
                         <ul>
-                        <li style="font-size:15px"><p style="Margin:0;mso-line-height-rule:exactly;font-family:helvetica, 'helvetica neue', arial, verdana, sans-serif;line-height:23px;letter-spacing:0;color:#555555;font-size:15px"><strong>Full Name</strong>: Bob</p></li>
-                        <li style="font-size:15px"><p style="Margin:0;mso-line-height-rule:exactly;font-family:helvetica, 'helvetica neue', arial, verdana, sans-serif;line-height:23px;letter-spacing:0;color:#555555;font-size:15px"><strong>Email</strong>: test@example.com</p></li>
-                        <li style="font-size:15px"><p style="Margin:0;mso-line-height-rule:exactly;font-family:helvetica, 'helvetica neue', arial, verdana, sans-serif;line-height:23px;letter-spacing:0;color:#555555;font-size:15px"><strong>Subject</strong>: Comment / Question</p></li>
-                        <li style="font-size:15px"><p style="Margin:0;mso-line-height-rule:exactly;font-family:helvetica, 'helvetica neue', arial, verdana, sans-serif;line-height:23px;letter-spacing:0;color:#555555;font-size:15px"><strong>Comment / Question</strong>:<strong><br></strong>Hello there! Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p></li>
+                        <li style="font-size:15px"><p style="Margin:0;mso-line-height-rule:exactly;font-family:helvetica, 'helvetica neue', arial, verdana, sans-serif;line-height:23px;letter-spacing:0;color:#555555;font-size:15px"><strong>Full Name</strong>: ${body.name}</p></li>
+                        <li style="font-size:15px"><p style="Margin:0;mso-line-height-rule:exactly;font-family:helvetica, 'helvetica neue', arial, verdana, sans-serif;line-height:23px;letter-spacing:0;color:#555555;font-size:15px"><strong>Email</strong>: ${body.email}</p></li>
+                        <li style="font-size:15px"><p style="Margin:0;mso-line-height-rule:exactly;font-family:helvetica, 'helvetica neue', arial, verdana, sans-serif;line-height:23px;letter-spacing:0;color:#555555;font-size:15px"><strong>Subject</strong>: ${body.subject}</p></li>
+                        <li style="font-size:15px"><p style="Margin:0;mso-line-height-rule:exactly;font-family:helvetica, 'helvetica neue', arial, verdana, sans-serif;line-height:23px;letter-spacing:0;color:#555555;font-size:15px"><strong>Comment / Question</strong>:<strong><br></strong>${body.comment}</p></li>
                         </ul></td>
                       </tr>
                     </table></td>
