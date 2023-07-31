@@ -13,8 +13,11 @@ export const handler = async () => {
 
   const info = await transporter.sendMail({
     from: 'no-reply@stjosephchurchbluffton.org',
-    to: "test-94e2f5@test.mailgenius.com",
+    to: "test-958986@test.mailgenius.com",
     subject: "New Contact Form Submission",
+    list: {
+      unsubscribe: 'admin@stjosephchurchbluffton.org?subject=unsubscribe'
+    },
     html: `<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:o="urn:schemas-microsoft-com:office:office">
   <head>
@@ -118,7 +121,7 @@ span.MsoHyperlinkFollowed {
                   <td align="left" style="padding:0;Margin:0;width:520px">
                     <table cellpadding="0" cellspacing="0" width="100%" role="presentation" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px">
                       <tr>
-                      <td align="left" style="padding:0;Margin:0;font-size:0"><img class="adapt-img" src="https://xrqmgq.stripocdn.email/content/guids/CABINET_9093eb88bbf85431e0183791af9f4aa4709f5a749970c70bf5b290ba871e878a/images/logo_w4A.png" alt="" width="186" style="display:block;font-size:14px;border:0;outline:none;text-decoration:none"></td>
+                      <td align="left" style="padding:0;Margin:0;font-size:0"><img class="adapt-img" src="https://www.stjosephchurchbluffton.org/logo.png" alt="" width="186" style="display:block;font-size:14px;border:0;outline:none;text-decoration:none"></td>
                       </tr>
                     </table></td>
                   </tr>
