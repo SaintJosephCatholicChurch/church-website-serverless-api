@@ -5,6 +5,9 @@ export const handler = async (event) => {
     return {
       statusCode: 501,
       body: "Not implemented",
+      headers: {
+        "access-control-allow-origin": "https://www.stjosephchurchbluffton.org",
+      },
     };
   }
 
@@ -22,6 +25,9 @@ export const handler = async (event) => {
     return {
       statusCode: 501,
       body: "Bad input",
+      headers: {
+        "access-control-allow-origin": "https://www.stjosephchurchbluffton.org",
+      },
     };
   }
 
@@ -219,11 +225,17 @@ span.MsoHyperlinkFollowed {
     return {
       statusCode: 200,
       body: "Contact email sent",
+      headers: {
+        "access-control-allow-origin": "https://www.stjosephchurchbluffton.org",
+      },
     };
   }
 
   return {
     statusCode: 400,
     body: "Unable to send contact email",
+    headers: {
+      "access-control-allow-origin": "https://www.stjosephchurchbluffton.org",
+    },
   };
 };
