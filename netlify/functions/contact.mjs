@@ -6,7 +6,7 @@ export const handler = async () => {
     port: 465,
     secure: true,
     auth: {
-      user: "apikey",
+      user: "stjosephcatholicchurchbluffton@gmail.com",
       pass: process.env.SENDGRID_API_KEY,
     },
   });
