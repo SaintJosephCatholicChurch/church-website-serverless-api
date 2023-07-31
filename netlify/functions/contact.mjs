@@ -3,8 +3,10 @@ import nodemailer from "nodemailer";
 export const handler = async () => {
   const transporter = nodemailer.createTransport({
     host: "smtp.sendgrid.net",
-    port: 587,
+    port: 465,
+    secure: true,
     auth: {
+      user: "apikey",
       pass: process.env.SENDGRID_API_KEY,
     },
   });
