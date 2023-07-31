@@ -1,7 +1,29 @@
 import nodemailer from "nodemailer";
 
 export const handler = async (event) => {
+  if (event.httpMethod !== "POST") {
+    return {
+      statusCode: 501,
+      body: "Not implemented",
+    };
+  }
+
   const body = JSON.parse(event.body);
+  if (
+    !body.email ||
+    body.email === "" ||
+    !body.name ||
+    body.name === "" ||
+    !body.subject ||
+    body.subject === "" ||
+    !body.comment ||
+    body.comment === ""
+  ) {
+    return {
+      statusCode: 501,
+      body: "Bad input",
+    };
+  }
 
   const transporter = nodemailer.createTransport({
     host: "smtppro.zoho.com",
@@ -14,12 +36,12 @@ export const handler = async (event) => {
   });
 
   const info = await transporter.sendMail({
-    from: 'no-reply@stjosephchurchbluffton.org',
+    from: "no-reply@stjosephchurchbluffton.org",
     to: process.env.CONTACT_EMAIL,
     replyTo: body.email,
     subject: "New Contact Form Submission",
     list: {
-      unsubscribe: 'admin@stjosephchurchbluffton.org?subject=unsubscribe'
+      unsubscribe: "admin@stjosephchurchbluffton.org?subject=unsubscribe",
     },
     html: `<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:o="urn:schemas-microsoft-com:office:office">
