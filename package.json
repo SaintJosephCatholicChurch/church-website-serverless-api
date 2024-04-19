@@ -14,11 +14,11 @@
   "homepage": "https://github.com/SaintJosephCatholicChurch/church-website-serverless-api#readme",
   "dependencies": {
     "chrome-aws-lambda-patch-node-16": "10.2.0",
-    "dotenv": "16.0.3",
-    "fast-xml-parser": "4.2.7",
-    "node-fetch": "3.3.0",
-    "node-html-parser": "6.1.5",
-    "nodemailer": "6.9.4",
+    "dotenv": "16.4.5",
+    "fast-xml-parser": "4.3.6",
+    "node-fetch": "3.3.2",
+    "node-html-parser": "6.1.13",
+    "nodemailer": "6.9.13",
     "puppeteer-core": "10.4.0"
   }
 }
