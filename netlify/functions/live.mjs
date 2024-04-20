@@ -78,7 +78,6 @@ export const handler = async (event) => {
           "--no-pings",
           "--no-sandbox",
           "--no-zygote",
-          "--use-gl=swiftshader",
           "--window-size=1920,1080",
           "--single-process",
           "--disable-gpu",
@@ -135,7 +134,10 @@ export const handler = async (event) => {
       console.log("setUserAgent complete.");
 
       console.log("Trying to load page:", `https://www.facebook.com/${pageOrChannel}/videos`);
-      await page.goto(`https://www.facebook.com/${pageOrChannel}/videos`, { waitUntil: "domcontentloaded" });
+      await page.goto(`https://www.facebook.com/${pageOrChannel}/videos`, {
+        waitUntil: "domcontentloaded",
+        timeout: 0,
+      });
       console.log("goto complete.");
 
       await page.waitForFunction('document.querySelector("body").innerText.includes("Videos")');
