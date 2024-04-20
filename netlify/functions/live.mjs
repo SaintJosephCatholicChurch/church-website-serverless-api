@@ -88,7 +88,7 @@ export const handler = async (event) => {
         defaultViewport: chromium.defaultViewport,
         executablePath: process.env.CHROME_EXECUTABLE_PATH || (await chromium.executablePath()),
         headless: true,
-        timeout: 0,
+        timeout: 60000,
         ignoreHTTPSErrors: true,
       });
       console.log("Broswer loaded.");
@@ -136,7 +136,7 @@ export const handler = async (event) => {
       console.log("Trying to load page:", `https://www.facebook.com/${pageOrChannel}/videos`);
       await page.goto(`https://www.facebook.com/${pageOrChannel}/videos`, {
         waitUntil: "domcontentloaded",
-        timeout: 0,
+        timeout: 60000,
       });
       console.log("goto complete.");
 
