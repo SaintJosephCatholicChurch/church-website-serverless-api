@@ -69,6 +69,7 @@ export const handler = async (event) => {
           "--disable-site-isolation-trials",
           "--disable-speech-api",
           "--disable-web-security",
+          "--disable-software-rasterize",
           "--disk-cache-size=33554432",
           "--enable-features=SharedArrayBuffer",
           "--hide-scrollbars",
@@ -89,10 +90,23 @@ export const handler = async (event) => {
         executablePath: process.env.CHROME_EXECUTABLE_PATH || (await chromium.executablePath()),
         headless: true,
         timeout: 0,
+        ignoreHTTPSErrors: true,
       });
       console.log("Broswer loaded.");
       const page = await browser.newPage();
       console.log("New page loaded.");
+
+      await page.setRequestInterception(true);
+
+      page.on("request", async (request) => {
+        const requestType = request.resourceType();
+
+        if (requestType === "image" || requestType === "media") {
+          return request.abort();
+        }
+
+        return request.continue();
+      });
 
       await page.evaluateOnNewDocument(() => {
         Object.defineProperty(navigator, "appCodeName", { get: () => "Mozilla" });
