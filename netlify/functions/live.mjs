@@ -119,6 +119,7 @@ export const handler = async (event) => {
       );
       console.log("setUserAgent complete.");
 
+      console.log("Trying to load page:", `https://www.facebook.com/${pageOrChannel}/videos`);
       await page.goto(`https://www.facebook.com/${pageOrChannel}/videos`, { waitUntil: "domcontentloaded" });
       console.log("goto complete.");
 
