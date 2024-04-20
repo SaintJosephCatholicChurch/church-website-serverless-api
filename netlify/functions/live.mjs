@@ -87,6 +87,7 @@ export const handler = async (event) => {
         defaultViewport: chromium.defaultViewport,
         executablePath: process.env.CHROME_EXECUTABLE_PATH || (await chromium.executablePath()),
         headless: true,
+        ignoreHTTPSErrors: true,
       });
       const page = await browser.newPage();
 
