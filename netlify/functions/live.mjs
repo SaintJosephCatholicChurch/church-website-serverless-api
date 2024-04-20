@@ -56,6 +56,7 @@ export const handler = async (event) => {
 
   if (provider === "facebook") {
     try {
+      let start = Date.now();
       const browser = await puppeteer.launch({
         args: [
           "--allow-running-insecure-content",
@@ -90,9 +91,22 @@ export const handler = async (event) => {
         timeout: 60000,
         ignoreHTTPSErrors: true,
       });
+
+      let end = Date.now();
+      console.log(`[puppeteer.launch] Execution time: ${end - start} ms`);
+      start = Date.now();
+
       const page = await browser.newPage();
 
+      end = Date.now();
+      console.log(`[newPage] Execution time: ${end - start} ms`);
+      start = Date.now();
+
       await page.setRequestInterception(true);
+
+      end = Date.now();
+      console.log(`[setRequestInterception] Execution time: ${end - start} ms`);
+      start = Date.now();
 
       page.on("request", async (request) => {
         const requestType = request.resourceType();
@@ -124,18 +138,38 @@ export const handler = async (event) => {
         Object.defineProperty(navigator, "vendorSub", { get: () => "" });
       });
 
+      end = Date.now();
+      console.log(`[evaluateOnNewDocument] Execution time: ${end - start} ms`);
+      start = Date.now();
+
       await page.setUserAgent(
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36"
       );
+
+      end = Date.now();
+      console.log(`[setUserAgent] Execution time: ${end - start} ms`);
+      start = Date.now();
 
       page.goto(`https://www.facebook.com/${pageOrChannel}/videos`, {
         waitUntil: "domcontentloaded",
         timeout: 60000,
       });
 
+      end = Date.now();
+      console.log(`[page.goto] Execution time: ${end - start} ms`);
+      start = Date.now();
+
       await page.waitForFunction('document.querySelector("body").innerText.includes("Videos")');
 
+      end = Date.now();
+      console.log(`[page.waitForFunction] Execution time: ${end - start} ms`);
+      start = Date.now();
+
       const data = await page.evaluate(() => document.querySelector("*").outerHTML);
+
+      end = Date.now();
+      console.log(`[page.evaluate] Execution time: ${end - start} ms`);
+      start = Date.now();
 
       const match = new RegExp(
         `https:\/\/www\.facebook\.com\/${pageOrChannel}\/videos\/[a-zA-Z0-9_-]+\/([0-9]+)\/`
@@ -150,6 +184,10 @@ export const handler = async (event) => {
       const f = await page.$(`a[href='${rawUrl}']`);
       const text = await (await f?.getProperty("textContent"))?.jsonValue();
       isStreaming = text?.includes("LIVE") ?? false;
+
+      end = Date.now();
+      console.log(`[compute] Execution time: ${end - start} ms`);
+      start = Date.now();
 
       await browser.close();
     } catch (e) {
