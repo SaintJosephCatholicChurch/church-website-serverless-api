@@ -79,6 +79,7 @@ export const handler = async (event) => {
           "--no-zygote",
           "--use-gl=swiftshader",
           "--window-size=1920,1080",
+          "--single-process",
           "--disable-gpu",
           "--disable-dev-shm-usage",
           "--no-first-run",
