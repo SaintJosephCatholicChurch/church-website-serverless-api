@@ -1,7 +1,7 @@
+import chromium from "@sparticuz/chromium";
+import { XMLParser } from "fast-xml-parser";
 import fetch from "node-fetch";
 import { parse } from "node-html-parser";
-import { XMLParser } from "fast-xml-parser";
-import chromium from "chrome-aws-lambda-patch-node-16";
 import puppeteer from "puppeteer-core";
 
 export const handler = async (event) => {
@@ -79,9 +79,9 @@ export const handler = async (event) => {
           "--use-gl=swiftshader",
           "--window-size=1920,1080",
           "--single-process",
-          '--disable-gpu',
-          '--disable-dev-shm-usage',
-          '--no-first-run',
+          "--disable-gpu",
+          "--disable-dev-shm-usage",
+          "--no-first-run",
           "--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36",
         ],
         defaultViewport: chromium.defaultViewport,
