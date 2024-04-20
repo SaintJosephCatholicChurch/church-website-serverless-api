@@ -13,7 +13,7 @@
   },
   "homepage": "https://github.com/SaintJosephCatholicChurch/church-website-serverless-api#readme",
   "dependencies": {
-    "chrome-aws-lambda-patch-node-16": "10.2.0",
+    "chrome-aws-lambda": "10.1.0",
     "dotenv": "16.4.5",
     "fast-xml-parser": "4.3.6",
     "node-fetch": "3.3.2",
