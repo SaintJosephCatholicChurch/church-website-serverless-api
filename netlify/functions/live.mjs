@@ -56,6 +56,7 @@ export const handler = async (event) => {
 
   if (provider === "facebook") {
     try {
+      console.log("Starting browser...");
       const browser = await puppeteer.launch({
         args: [
           "--allow-running-insecure-content",
@@ -87,9 +88,10 @@ export const handler = async (event) => {
         defaultViewport: chromium.defaultViewport,
         executablePath: process.env.CHROME_EXECUTABLE_PATH || (await chromium.executablePath()),
         headless: true,
-        ignoreHTTPSErrors: true,
       });
+      console.log("Broswer loaded.");
       const page = await browser.newPage();
+      console.log("New page loaded.");
 
       await page.evaluateOnNewDocument(() => {
         Object.defineProperty(navigator, "appCodeName", { get: () => "Mozilla" });
@@ -110,16 +112,21 @@ export const handler = async (event) => {
         Object.defineProperty(navigator, "vendor", { get: () => "Google Inc." });
         Object.defineProperty(navigator, "vendorSub", { get: () => "" });
       });
+      console.log("evaluateOnNewDocument complete.");
 
       await page.setUserAgent(
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36"
       );
+      console.log("setUserAgent complete.");
 
       await page.goto(`https://www.facebook.com/${pageOrChannel}/videos`, { waitUntil: "domcontentloaded" });
+      console.log("goto complete.");
 
       await page.waitForFunction('document.querySelector("body").innerText.includes("Videos")');
+      console.log("waitForFunction complete.");
 
       const data = await page.evaluate(() => document.querySelector("*").outerHTML);
+      console.log("evaluate complete.");
 
       const match = new RegExp(
         `https:\/\/www\.facebook\.com\/${pageOrChannel}\/videos\/[a-zA-Z0-9_-]+\/([0-9]+)\/`
