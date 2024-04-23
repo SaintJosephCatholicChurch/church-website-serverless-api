@@ -165,7 +165,7 @@ export const handler = async (event) => {
       console.log(`[page.waitForFunction] Execution time: ${end - start} ms`);
       start = Date.now();
 
-      await page.evaluate(async () => {
+      const evalFn = async () => {
         let links = document.querySelectorAll("a");
         for (let link of links) {
           const match = new RegExp(
@@ -184,7 +184,9 @@ export const handler = async (event) => {
 
           links.push(element2.href);
         }
-      });
+      };
+
+      await page.evaluate(evalFn);
 
       end = Date.now();
       console.log(`[compute] Execution time: ${end - start} ms`);
