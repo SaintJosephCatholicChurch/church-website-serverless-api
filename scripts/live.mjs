@@ -177,17 +177,17 @@ export const handler = async () => {
     };
   }
 
-  writeFileSync("netlify/function/data/live.json", JSON.stringify({ isStreaming, url }, null, 2));
+  writeFileSync("../netlify/function/data/live.json", JSON.stringify({ isStreaming, url }, null, 2));
 
-  if (process.argv.length > 2 && process.argv[2] === "-ci") {
-    console.info("Pushing to github...");
-    await git.spawn(["config", "credential.helper", "'cache --timeout=120'"]);
-    await git.spawn(["config", "user.email", "lautzd@gmail.com"]);
-    await git.spawn(["config", "user.name", "Circle CI Bot"]);
-    await git.spawn(["add", "-A"]);
-    await git.spawn(["commit", "-m", '"Updated bulletins from CI [skip ci]"']);
-    await git.spawn(["push", "-q"]);
-  }
+  // if (process.argv.length > 2 && process.argv[2] === "-ci") {
+  //   console.info("Pushing to github...");
+  //   await git.spawn(["config", "credential.helper", "'cache --timeout=120'"]);
+  //   await git.spawn(["config", "user.email", "lautzd@gmail.com"]);
+  //   await git.spawn(["config", "user.name", "Circle CI Bot"]);
+  //   await git.spawn(["add", "-A"]);
+  //   await git.spawn(["commit", "-m", '"Updated bulletins from CI [skip ci]"']);
+  //   await git.spawn(["push", "-q"]);
+  // }
 };
 
 handler();
