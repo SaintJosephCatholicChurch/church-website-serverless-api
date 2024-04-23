@@ -110,6 +110,7 @@ export const handler = async (event) => {
         headless: true,
         timeout: 60000,
         ignoreHTTPSErrors: true,
+        userDataDir: './data'
       });
 
       let end = Date.now();
