@@ -165,28 +165,28 @@ export const handler = async (event) => {
       console.log(`[page.waitForFunction] Execution time: ${end - start} ms`);
       start = Date.now();
 
-      const evalFn = async () => {
+      const result = await page.evaluate(async () => {
         let links = document.querySelectorAll("a");
         for (let link of links) {
           const match = new RegExp(
-            `https:\/\/www\.facebook\.com\/${pageOrChannel}\/videos\/[a-zA-Z0-9_-]+\/([0-9]+)\/`
+            `https:\/\/www\.facebook\.com\/[a-zA-Z0-9_-]+\/videos\/[a-zA-Z0-9_-]+\/([0-9]+)\/`
           ).exec(data);
 
           let rawUrl;
           if (match && match.length >= 2) {
             rawUrl = match[0];
-            url = `https://www.facebook.com/plugins/video.php?href=${encodeURIComponent(match[0])}&show_text=false`;
-
             const text = await (await link?.getProperty("textContent"))?.jsonValue();
-            isStreaming = text?.includes("LIVE") ?? false;
-            break;
+
+            return {
+              url: `https://www.facebook.com/plugins/video.php?href=${encodeURIComponent(match[0])}&show_text=false`,
+              streaming: text?.includes("LIVE") ?? false,
+            }
           }
-
-          links.push(element2.href);
         }
-      };
+      });
 
-      await page.evaluate(evalFn);
+      url = result?.url ?? '';
+      isStreaming = result?.isStreaming ?? false;
 
       end = Date.now();
       console.log(`[compute] Execution time: ${end - start} ms`);
