@@ -170,7 +170,7 @@ export const handler = async (event) => {
         for (let link of links) {
           const match = new RegExp(
             `https:\/\/www\.facebook\.com\/[a-zA-Z0-9_-]+\/videos\/[a-zA-Z0-9_-]+\/([0-9]+)\/`
-          ).exec(a.href);
+          ).exec(link.href);
 
           let rawUrl;
           if (match && match.length >= 2) {
