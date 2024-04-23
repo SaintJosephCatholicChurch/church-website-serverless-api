@@ -1,13 +1,5 @@
 version: 2.1
 
-triggers:
-  - schedule:
-      cron: "0,5,15,20,30,35,45,50 * * * *"
-      filters:
-        branches:
-          only:
-            - main
-
 jobs:
   build:
     working_directory: ~/repo
@@ -34,10 +26,13 @@ jobs:
             - ./node_modules
 
 workflows:
-  build-deploy:
-    jobs:
-      - build:
+  nightly:
+    triggers:
+      - schedule:
+          cron: "0 0 * * *"
           filters:
             branches:
               only:
-                - bad
+                - main
+    jobs:
+      - build
