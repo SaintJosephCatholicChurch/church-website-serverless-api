@@ -87,7 +87,7 @@ export const handler = async (event) => {
         ],
         defaultViewport: chromium.defaultViewport,
         executablePath: process.env.CHROME_EXECUTABLE_PATH || (await chromium.executablePath()),
-        headless: true,
+        headless: 'shell',
         timeout: 60000,
         ignoreHTTPSErrors: true,
       });
