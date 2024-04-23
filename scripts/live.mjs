@@ -1,6 +1,7 @@
 import git from "@npmcli/git";
 import chromium from "@sparticuz/chromium";
 import puppeteer from "puppeteer-core";
+import { writeFileSync } from 'fs';
 import "dotenv/config";
 
 export const handler = async () => {
