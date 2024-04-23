@@ -3,7 +3,7 @@ jobs:
   build:
     working_directory: ~/repo
     docker:
-      - image: circleci/node:18.18.2-browsers
+      - image: cimg/node:18.18.2-browsers
     steps:
       - add_ssh_keys:
           fingerprints:
