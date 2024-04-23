@@ -129,53 +129,53 @@ export const handler = async (event) => {
       console.log(`[newPage] Execution time: ${end - start} ms`);
       start = Date.now();
 
-      await page.setRequestInterception(true);
+      // await page.setRequestInterception(true);
 
-      end = Date.now();
-      console.log(`[setRequestInterception] Execution time: ${end - start} ms`);
-      start = Date.now();
+      // end = Date.now();
+      // console.log(`[setRequestInterception] Execution time: ${end - start} ms`);
+      // start = Date.now();
 
-      page.on("request", async (request) => {
-        const requestType = request.resourceType();
+      // page.on("request", async (request) => {
+      //   const requestType = request.resourceType();
 
-        if (requestType === "image" || requestType === "media") {
-          return request.abort();
-        }
+      //   if (requestType === "image" || requestType === "media") {
+      //     return request.abort();
+      //   }
 
-        return request.continue();
-      });
+      //   return request.continue();
+      // });
 
-      await page.evaluateOnNewDocument(() => {
-        Object.defineProperty(navigator, "appCodeName", { get: () => "Mozilla" });
-        Object.defineProperty(navigator, "appName", { get: () => "Netscape" });
-        Object.defineProperty(navigator, "appVersion", {
-          get: () =>
-            "5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36",
-        });
-        Object.defineProperty(navigator, "platform", { get: () => "Win32" });
-        Object.defineProperty(navigator, "product", { get: () => "Gecko" });
-        Object.defineProperty(navigator, "productSub", { get: () => "20030107" });
-        Object.defineProperty(navigator, "vendor", { get: () => "" });
-        Object.defineProperty(navigator, "oscpu", { get: () => "Windows NT 10.0; Win64; x64" });
-        Object.defineProperty(navigator, "userAgent", {
-          get: () =>
-            "5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36",
-        });
-        Object.defineProperty(navigator, "vendor", { get: () => "Google Inc." });
-        Object.defineProperty(navigator, "vendorSub", { get: () => "" });
-      });
+      // await page.evaluateOnNewDocument(() => {
+      //   Object.defineProperty(navigator, "appCodeName", { get: () => "Mozilla" });
+      //   Object.defineProperty(navigator, "appName", { get: () => "Netscape" });
+      //   Object.defineProperty(navigator, "appVersion", {
+      //     get: () =>
+      //       "5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36",
+      //   });
+      //   Object.defineProperty(navigator, "platform", { get: () => "Win32" });
+      //   Object.defineProperty(navigator, "product", { get: () => "Gecko" });
+      //   Object.defineProperty(navigator, "productSub", { get: () => "20030107" });
+      //   Object.defineProperty(navigator, "vendor", { get: () => "" });
+      //   Object.defineProperty(navigator, "oscpu", { get: () => "Windows NT 10.0; Win64; x64" });
+      //   Object.defineProperty(navigator, "userAgent", {
+      //     get: () =>
+      //       "5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36",
+      //   });
+      //   Object.defineProperty(navigator, "vendor", { get: () => "Google Inc." });
+      //   Object.defineProperty(navigator, "vendorSub", { get: () => "" });
+      // });
 
-      end = Date.now();
-      console.log(`[evaluateOnNewDocument] Execution time: ${end - start} ms`);
-      start = Date.now();
+      // end = Date.now();
+      // console.log(`[evaluateOnNewDocument] Execution time: ${end - start} ms`);
+      // start = Date.now();
 
-      await page.setUserAgent(
-        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36"
-      );
+      // await page.setUserAgent(
+      //   "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36"
+      // );
 
-      end = Date.now();
-      console.log(`[setUserAgent] Execution time: ${end - start} ms`);
-      start = Date.now();
+      // end = Date.now();
+      // console.log(`[setUserAgent] Execution time: ${end - start} ms`);
+      // start = Date.now();
 
       await page.goto(`https://www.facebook.com/${pageOrChannel}/videos`, {
         waitUntil: "domcontentloaded",
