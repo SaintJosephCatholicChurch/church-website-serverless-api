@@ -78,7 +78,7 @@ export const handler = async (event) => {
           "--no-pings",
           "--no-sandbox",
           "--no-zygote",
-          "--window-size=1920,1080",
+          "--window-size=1280,720",
           "--single-process",
           "--disable-gpu",
           "--disable-dev-shm-usage",
@@ -87,7 +87,7 @@ export const handler = async (event) => {
         ],
         defaultViewport: chromium.defaultViewport,
         executablePath: process.env.CHROME_EXECUTABLE_PATH || (await chromium.executablePath()),
-        headless: 'shell',
+        headless: true,
         timeout: 60000,
         ignoreHTTPSErrors: true,
       });
@@ -165,25 +165,26 @@ export const handler = async (event) => {
       console.log(`[page.waitForFunction] Execution time: ${end - start} ms`);
       start = Date.now();
 
-      const data = await page.evaluate(() => document.querySelector("*").outerHTML);
+      await page.evaluate(async () => {
+        let links = document.querySelectorAll("a");
+        for (let link of links) {
+          const match = new RegExp(
+            `https:\/\/www\.facebook\.com\/${pageOrChannel}\/videos\/[a-zA-Z0-9_-]+\/([0-9]+)\/`
+          ).exec(data);
 
-      end = Date.now();
-      console.log(`[page.evaluate] Execution time: ${end - start} ms`);
-      start = Date.now();
+          let rawUrl;
+          if (match && match.length >= 2) {
+            rawUrl = match[0];
+            url = `https://www.facebook.com/plugins/video.php?href=${encodeURIComponent(match[0])}&show_text=false`;
 
-      const match = new RegExp(
-        `https:\/\/www\.facebook\.com\/${pageOrChannel}\/videos\/[a-zA-Z0-9_-]+\/([0-9]+)\/`
-      ).exec(data);
+            const text = await (await link?.getProperty("textContent"))?.jsonValue();
+            isStreaming = text?.includes("LIVE") ?? false;
+            break;
+          }
 
-      let rawUrl;
-      if (match && match.length >= 2) {
-        rawUrl = match[0];
-        url = `https://www.facebook.com/plugins/video.php?href=${encodeURIComponent(match[0])}&show_text=false`;
-      }
-
-      const f = await page.$(`a[href='${rawUrl}']`);
-      const text = await (await f?.getProperty("textContent"))?.jsonValue();
-      isStreaming = text?.includes("LIVE") ?? false;
+          links.push(element2.href);
+        }
+      });
 
       end = Date.now();
       console.log(`[compute] Execution time: ${end - start} ms`);
