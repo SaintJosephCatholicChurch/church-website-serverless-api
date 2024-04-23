@@ -172,20 +172,16 @@ export const handler = async (event) => {
             `https:\/\/www\.facebook\.com\/[a-zA-Z0-9_-]+\/videos\/[a-zA-Z0-9_-]+\/([0-9]+)\/`
           ).exec(link.href);
 
-          let rawUrl;
           if (match && match.length >= 2) {
-            rawUrl = match[0];
-            const text = await (await link?.getProperty("textContent"))?.jsonValue();
-
             return {
               url: `https://www.facebook.com/plugins/video.php?href=${encodeURIComponent(match[0])}&show_text=false`,
-              streaming: text?.includes("LIVE") ?? false,
-            }
+              streaming: link.textContent.includes("LIVE") ?? false,
+            };
           }
         }
       });
 
-      url = result?.url ?? '';
+      url = result?.url ?? "";
       isStreaming = result?.isStreaming ?? false;
 
       end = Date.now();
