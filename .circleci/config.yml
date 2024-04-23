@@ -1,4 +1,13 @@
 version: 2.1
+
+triggers:
+  - schedule:
+      cron: "0,5,15,20,30,35,45,50 * * * *"
+      filters:
+        branches:
+          only:
+            - main
+
 jobs:
   build:
     working_directory: ~/repo
@@ -23,12 +32,3 @@ jobs:
           when: on_success
           paths:
             - ./node_modules
-
-workflows:
-  build-deploy:
-    jobs:
-      - build:
-          filters:
-            branches:
-              only:
-                - main
