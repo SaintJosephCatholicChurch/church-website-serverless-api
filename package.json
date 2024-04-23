@@ -12,6 +12,9 @@
     "url": "https://github.com/SaintJosephCatholicChurch/church-website-serverless-api/issues"
   },
   "homepage": "https://github.com/SaintJosephCatholicChurch/church-website-serverless-api#readme",
+  "scripts": {
+    "live": "node ./scripts/live.mjs -ci"
+  },
   "dependencies": {
     "@sparticuz/chromium": "123.0.1",
     "dotenv": "16.4.5",
@@ -20,5 +23,8 @@
     "node-html-parser": "6.1.13",
     "nodemailer": "6.9.13",
     "puppeteer-core": "22.6.5"
+  },
+  "devDependencies": {
+    "@npmcli/git": "3.0.2"
   }
 }
