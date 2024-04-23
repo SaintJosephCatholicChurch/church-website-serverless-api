@@ -187,8 +187,6 @@ export const handler = async (event) => {
       end = Date.now();
       console.log(`[compute] Execution time: ${end - start} ms`);
       start = Date.now();
-
-      await browser.close();
     } catch (e) {
       console.error(e);
       return {
