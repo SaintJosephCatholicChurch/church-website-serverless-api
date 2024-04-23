@@ -150,7 +150,7 @@ export const handler = async (event) => {
       console.log(`[setUserAgent] Execution time: ${end - start} ms`);
       start = Date.now();
 
-      page.goto(`https://www.facebook.com/${pageOrChannel}/videos`, {
+      await page.goto(`https://www.facebook.com/${pageOrChannel}/videos`, {
         waitUntil: "domcontentloaded",
         timeout: 60000,
       });
