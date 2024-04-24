@@ -3,7 +3,7 @@ import chromium from "@sparticuz/chromium";
 import puppeteer from "puppeteer-core";
 import { writeFileSync } from "fs";
 import "dotenv/config";
-import { join } from "path";
+import { join, dirname } from "path";
 
 export const handler = async () => {
   try {
@@ -187,6 +187,10 @@ export const handler = async () => {
     console.log(`[browser.close] Execution time: ${end - start} ms`);
     start = Date.now();
 
+    console.log("writing data", { isStreaming, url });
+
+    const __filename = fileURLToPath(import.meta.url);
+    const __dirname = dirname(__filename);
     writeFileSync(join(__dirname, "./netlify/function/data/live.json"), JSON.stringify({ isStreaming, url }, null, 2));
 
     end = Date.now();
