@@ -171,10 +171,13 @@ export const handler = async () => {
     console.log(`[compute] Execution time: ${end - start} ms`);
     start = Date.now();
 
-    await page.close();
+    const pages = await browser.pages();
+    for (let i = 0; i < pages.length; i++) {
+      await pages[i].close();
+    }
 
     end = Date.now();
-    console.log(`[page.close] Execution time: ${end - start} ms`);
+    console.log(`[pages[i].close] Execution time: ${end - start} ms`);
     start = Date.now();
 
     await browser.close();
