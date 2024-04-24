@@ -152,7 +152,7 @@ export const handler = async () => {
       let links = document.querySelectorAll("a");
       for (let link of links) {
         const match = new RegExp(
-          `https:\/\/www\.facebook\.com\/[a-zA-Z0-9_-]+\/videos\/[a-zA-Z0-9_-]+\/([0-9]+)\/`
+          `https:\/\/www\.facebook\.com\/stjosephchurchbluffton\/videos\/[a-zA-Z0-9_-]+\/([0-9]+)\/`
         ).exec(link.href);
 
         if (match && match.length >= 2) {
