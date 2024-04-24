@@ -21,6 +21,8 @@ jobs:
       - name: Install
         run: |
           npm install --no-save
+        env:
+          PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: "true"
 
       - name: Run live check
         uses: mujo-code/puppeteer-headful@18.9.0
