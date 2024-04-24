@@ -27,6 +27,7 @@ jobs:
         id: puppeteer
         env:
           CI: "true"
+          CWD: "${GITHUB_WORKSPACE}"
         with:
           args: npm run live
 

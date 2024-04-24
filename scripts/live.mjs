@@ -188,7 +188,7 @@ export const handler = async () => {
 
     console.log("writing data", { isStreaming, url });
 
-    const baseDir = process.cwd();
+    const baseDir = process.env.CWD;
     writeFileSync(
       join(baseDir, "netlify/function/data/live.json"),
       JSON.stringify({ isStreaming, url }, null, 2)
