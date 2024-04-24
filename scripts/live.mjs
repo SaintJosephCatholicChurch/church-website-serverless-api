@@ -5,6 +5,8 @@ import "dotenv/config";
 import { join } from "path";
 
 export const handler = async () => {
+  let browser;
+
   try {
     const completeStart = Date.now();
 
@@ -12,7 +14,7 @@ export const handler = async () => {
     let url = "";
 
     let start = Date.now();
-    const browser = await puppeteer.launch({
+    browser = await puppeteer.launch({
       args: [
         "--allow-running-insecure-content",
         "--autoplay-policy=user-gesture-required",
@@ -203,7 +205,8 @@ export const handler = async () => {
     const completeEnd = Date.now();
     console.log(`[END] Execution time: ${completeEnd - completeStart} ms`);
   } catch (e) {
-    console.error(e);
+    console.log(e);
+    browser.close()
   }
 };
 
