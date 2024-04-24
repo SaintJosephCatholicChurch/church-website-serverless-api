@@ -3,6 +3,7 @@ import chromium from "@sparticuz/chromium";
 import puppeteer from "puppeteer-core";
 import { writeFileSync } from 'fs';
 import "dotenv/config";
+import { join } from "path";
 
 export const handler = async () => {
   let isStreaming = false;
@@ -175,15 +176,9 @@ export const handler = async () => {
     console.log(`[END] Execution time: ${completeEnd - completeStart} ms`);
   } catch (e) {
     console.error(e);
-    return {
-      statusCode: 500,
-      headers: {
-        "access-control-allow-origin": "https://www.stjosephchurchbluffton.org",
-      },
-    };
   }
 
-  writeFileSync("../netlify/function/data/live.json", JSON.stringify({ isStreaming, url }, null, 2));
+  writeFileSync(join(__dirname, "./netlify/function/data/live.json"), JSON.stringify({ isStreaming, url }, null, 2));
 
   // if (process.argv.length > 2 && process.argv[2] === "-ci") {
   //   console.info("Pushing to github...");
