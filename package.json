@@ -23,8 +23,5 @@
     "node-html-parser": "6.1.13",
     "nodemailer": "6.9.13",
     "puppeteer-core": "22.6.5"
-  },
-  "devDependencies": {
-    "@npmcli/git": "3.0.2"
   }
 }
