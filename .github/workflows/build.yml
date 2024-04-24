@@ -1,4 +1,4 @@
-name: Build
+name: Live Check
 
 on:
   workflow_dispatch:
