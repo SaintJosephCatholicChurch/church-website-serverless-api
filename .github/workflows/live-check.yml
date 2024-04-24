@@ -25,4 +25,4 @@ jobs:
         id: puppeteer
         with:
           files: |
-            npm run live
+            ./scripts/live.mjs
