@@ -205,8 +205,7 @@ export const handler = async () => {
     const completeEnd = Date.now();
     console.log(`[END] Execution time: ${completeEnd - completeStart} ms`);
   } catch (e) {
-    console.log(e);
-    browser.close()
+    console.error(e);
   }
 };
 
