@@ -15,14 +15,17 @@ jobs:
         with:
           cache-dependency-path: package-lock.json
           node-version: 18
+        env:
+          PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: "true"
 
       - name: Install
         run: |
           npm install --no-save
 
       - name: Run live check
-        uses: tj-actions/puppeteer@v5
+        uses: mujo-code/puppeteer-headful@18.9.0
         id: puppeteer
+        env:
+          CI: "true"
         with:
-          files: |
-            ./scripts/live.mjs
+          args: npm run live
