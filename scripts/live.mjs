@@ -189,8 +189,7 @@ export const handler = async () => {
 
     console.log("writing data", { isStreaming, url });
 
-    const __filename = fileURLToPath(import.meta.url);
-    const __dirname = dirname(__filename);
+    const __dirname = dirname('');
     writeFileSync(join(__dirname, "./netlify/function/data/live.json"), JSON.stringify({ isStreaming, url }, null, 2));
 
     end = Date.now();
