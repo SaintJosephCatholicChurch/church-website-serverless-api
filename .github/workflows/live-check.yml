@@ -23,7 +23,7 @@ jobs:
           PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: "true"
 
       - name: Run live check
-        uses: KaneFreeman/puppeteer-headful@18.9.0
+        uses: KaneFreeman/puppeteer-headful@v18.9.0
         id: puppeteer
         env:
           CI: "true"
