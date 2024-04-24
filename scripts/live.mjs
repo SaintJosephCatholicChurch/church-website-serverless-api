@@ -158,6 +158,8 @@ export const handler = async () => {
         ).exec(link.href);
 
         if (match && match.length >= 2) {
+          console.log('link text', link.textContent);
+
           return {
             url: `https://www.facebook.com/plugins/video.php?href=${encodeURIComponent(match[0])}&show_text=false`,
             streaming: link.textContent.includes("LIVE") ?? false,
