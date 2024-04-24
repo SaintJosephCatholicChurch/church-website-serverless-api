@@ -188,8 +188,9 @@ export const handler = async () => {
 
     console.log("writing data", { isStreaming, url });
 
+    const baseDir = process.cwd();
     writeFileSync(
-      join(process.env.GITHUB_WORKSPACE, "netlify/function/data/live.json"),
+      join(baseDir, "netlify/function/data/live.json"),
       JSON.stringify({ isStreaming, url }, null, 2)
     );
 
