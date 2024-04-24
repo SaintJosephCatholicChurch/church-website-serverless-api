@@ -1,17 +1,17 @@
 import git from "@npmcli/git";
 import chromium from "@sparticuz/chromium";
 import puppeteer from "puppeteer-core";
-import { writeFileSync } from 'fs';
+import { writeFileSync } from "fs";
 import "dotenv/config";
 import { join } from "path";
 
 export const handler = async () => {
   try {
     const completeStart = Date.now();
-  
+
     let isStreaming = false;
     let url = "";
-    
+
     let start = Date.now();
     const browser = await puppeteer.launch({
       args: [
@@ -171,6 +171,12 @@ export const handler = async () => {
     console.log(`[compute] Execution time: ${end - start} ms`);
     start = Date.now();
 
+    await page.close();
+
+    end = Date.now();
+    console.log(`[page.close] Execution time: ${end - start} ms`);
+    start = Date.now();
+
     await browser.close();
 
     end = Date.now();
@@ -178,11 +184,11 @@ export const handler = async () => {
     start = Date.now();
 
     writeFileSync(join(__dirname, "./netlify/function/data/live.json"), JSON.stringify({ isStreaming, url }, null, 2));
-  
+
     end = Date.now();
     console.log(`[writeFileSync] Execution time: ${end - start} ms`);
     start = Date.now();
-  
+
     // if (process.argv.length > 2 && process.argv[2] === "-ci") {
     //   console.info("Pushing to github...");
     //   await git.spawn(["config", "credential.helper", "'cache --timeout=120'"]);
