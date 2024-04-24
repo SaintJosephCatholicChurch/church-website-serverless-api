@@ -9,6 +9,7 @@ export const handler = async () => {
   let url = "";
 
   try {
+    const completeStart = Date.now();
     let start = Date.now();
     const browser = await puppeteer.launch({
       args: [
@@ -167,6 +168,11 @@ export const handler = async () => {
     end = Date.now();
     console.log(`[compute] Execution time: ${end - start} ms`);
     start = Date.now();
+
+    await browser.close();
+
+    const completeEnd = Date.now();
+    console.log(`[END] Execution time: ${completeEnd - completeStart} ms`);
   } catch (e) {
     console.error(e);
     return {
