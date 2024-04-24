@@ -158,19 +158,19 @@ export const handler = async () => {
         ).exec(link.href);
 
         if (match && match.length >= 2) {
-
           return {
+            rawUrl: match[0],
             url: `https://www.facebook.com/plugins/video.php?href=${encodeURIComponent(match[0])}&show_text=false`,
-            textContent: link.textContent,
           };
         }
       }
     });
 
-    console.log('text', result?.textContent);
-
     url = result?.url ?? "";
-    isStreaming = result?.textContent.includes("LIVE") ?? false;
+
+    const f = await page.$(`a[href='${result?.rawUrl ?? ""}']`);
+    const text = await (await f?.getProperty("textContent"))?.jsonValue();
+    isStreaming = text?.includes("LIVE") ?? false;
 
     end = Date.now();
     console.log(`[compute] Execution time: ${end - start} ms`);
