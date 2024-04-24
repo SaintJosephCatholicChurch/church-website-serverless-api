@@ -188,8 +188,10 @@ export const handler = async () => {
 
     console.log("writing data", { isStreaming, url });
 
+    console.log("env", process.env);
+
     writeFileSync(
-      join(process.env.WORK_DIR, "/home/runner/work/my-repo-name/my-repo-name/netlify/function/data/live.json"),
+      join(process.env.WORK_DIR, "netlify/function/data/live.json"),
       JSON.stringify({ isStreaming, url }, null, 2)
     );
 
