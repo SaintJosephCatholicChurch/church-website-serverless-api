@@ -2,6 +2,8 @@ name: Live Check
 
 on:
   workflow_dispatch:
+  schedule:
+    - cron:  '0,5,15,20,30,35,45,50 3-21 * * *'
 
 jobs:
   build:
