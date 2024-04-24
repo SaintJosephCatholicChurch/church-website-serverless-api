@@ -6,11 +6,12 @@ import "dotenv/config";
 import { join } from "path";
 
 export const handler = async () => {
-  let isStreaming = false;
-  let url = "";
-
   try {
     const completeStart = Date.now();
+  
+    let isStreaming = false;
+    let url = "";
+    
     let start = Date.now();
     const browser = await puppeteer.launch({
       args: [
@@ -172,23 +173,30 @@ export const handler = async () => {
 
     await browser.close();
 
+    end = Date.now();
+    console.log(`[browser.close] Execution time: ${end - start} ms`);
+    start = Date.now();
+
+    writeFileSync(join(__dirname, "./netlify/function/data/live.json"), JSON.stringify({ isStreaming, url }, null, 2));
+  
+    end = Date.now();
+    console.log(`[writeFileSync] Execution time: ${end - start} ms`);
+    start = Date.now();
+  
+    // if (process.argv.length > 2 && process.argv[2] === "-ci") {
+    //   console.info("Pushing to github...");
+    //   await git.spawn(["config", "credential.helper", "'cache --timeout=120'"]);
+    //   await git.spawn(["config", "user.email", "lautzd@gmail.com"]);
+    //   await git.spawn(["config", "user.name", "Circle CI Bot"]);
+    //   await git.spawn(["add", "-A"]);
+    //   await git.spawn(["commit", "-m", '"Updated bulletins from CI [skip ci]"']);
+    //   await git.spawn(["push", "-q"]);
+    // }
     const completeEnd = Date.now();
     console.log(`[END] Execution time: ${completeEnd - completeStart} ms`);
   } catch (e) {
     console.error(e);
   }
-
-  writeFileSync(join(__dirname, "./netlify/function/data/live.json"), JSON.stringify({ isStreaming, url }, null, 2));
-
-  // if (process.argv.length > 2 && process.argv[2] === "-ci") {
-  //   console.info("Pushing to github...");
-  //   await git.spawn(["config", "credential.helper", "'cache --timeout=120'"]);
-  //   await git.spawn(["config", "user.email", "lautzd@gmail.com"]);
-  //   await git.spawn(["config", "user.name", "Circle CI Bot"]);
-  //   await git.spawn(["add", "-A"]);
-  //   await git.spawn(["commit", "-m", '"Updated bulletins from CI [skip ci]"']);
-  //   await git.spawn(["push", "-q"]);
-  // }
 };
 
 handler();
