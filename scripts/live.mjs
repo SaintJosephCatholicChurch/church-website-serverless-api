@@ -186,16 +186,19 @@ export const handler = async () => {
     console.log(`[browser.close] Execution time: ${end - start} ms`);
     start = Date.now();
 
-    console.log("writing data", { isStreaming, url });
+    if (url && url !== "") {
+      console.log("writing data", { isStreaming, url });
+      writeFileSync(
+        join(process.env.GITHUB_WORKSPACE, "netlify/functions/data/live.json"),
+        JSON.stringify({ isStreaming, url }, null, 2)
+      );
 
-    writeFileSync(
-      join(process.env.GITHUB_WORKSPACE, "netlify/functions/data/live.json"),
-      JSON.stringify({ isStreaming, url }, null, 2)
-    );
-
-    end = Date.now();
-    console.log(`[writeFileSync] Execution time: ${end - start} ms`);
-    start = Date.now();
+      end = Date.now();
+      console.log(`[writeFileSync] Execution time: ${end - start} ms`);
+      start = Date.now();
+    } else {
+      console.log("skipping writing data, url not set");
+    }
 
     const completeEnd = Date.now();
     console.log(`[END] Execution time: ${completeEnd - completeStart} ms`);
