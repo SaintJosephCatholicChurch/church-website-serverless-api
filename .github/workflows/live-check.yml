@@ -2,7 +2,7 @@ name: Live Check
 
 on:
   schedule:
-    - cron:  '*/15 3-21 * * *'
+    - cron:  '*/5 * * * *'
 
 jobs:
   build:
