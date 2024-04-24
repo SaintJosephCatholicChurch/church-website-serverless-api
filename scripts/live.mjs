@@ -150,26 +150,22 @@ export const handler = async () => {
     console.log(`[page.waitForFunction] Execution time: ${end - start} ms`);
     start = Date.now();
 
-    const result = await page.evaluate(async () => {
-      let links = document.querySelectorAll("a");
-      for (let link of links) {
-        const match = new RegExp(
-          `https:\/\/www\.facebook\.com\/stjosephchurchbluffton\/videos\/[a-zA-Z0-9_-]+\/([0-9]+)\/`
-        ).exec(link.href);
-
-        if (match && match.length >= 2) {
-          console.log('link text', link.textContent);
-
-          return {
-            url: `https://www.facebook.com/plugins/video.php?href=${encodeURIComponent(match[0])}&show_text=false`,
-            streaming: link.textContent.includes("LIVE") ?? false,
-          };
-        }
-      }
+    const links = await page.evaluate(async () => {
+      return document.querySelectorAll("a");
     });
 
-    url = result?.url ?? "";
-    isStreaming = result?.isStreaming ?? false;
+    for (let link of links) {
+      const match = new RegExp(
+        `https:\/\/www\.facebook\.com\/stjosephchurchbluffton\/videos\/[a-zA-Z0-9_-]+\/([0-9]+)\/`
+      ).exec(link.href);
+
+      if (match && match.length >= 2) {
+        console.log("link text", link.textContent);
+
+        url = `https://www.facebook.com/plugins/video.php?href=${encodeURIComponent(match[0])}&show_text=false`;
+        isStreaming = link.textContent.includes("LIVE") ?? false;
+      }
+    }
 
     end = Date.now();
     console.log(`[compute] Execution time: ${end - start} ms`);
