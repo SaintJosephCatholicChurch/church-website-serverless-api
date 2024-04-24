@@ -189,7 +189,7 @@ export const handler = async () => {
     console.log("writing data", { isStreaming, url });
 
     const __dirname = resolve(dirname('.'));
-    writeFileSync(join(__dirname, "./netlify/function/data/live.json"), JSON.stringify({ isStreaming, url }, null, 2));
+    writeFileSync(join(__dirname, "../../netlify/function/data/live.json"), JSON.stringify({ isStreaming, url }, null, 2));
 
     end = Date.now();
     console.log(`[writeFileSync] Execution time: ${end - start} ms`);
