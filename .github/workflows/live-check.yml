@@ -27,8 +27,8 @@ jobs:
         id: puppeteer
         timeout-minutes: 1
         env:
+          WORK_DIR: ${{ github.workspace }}
           CI: "true"
-          CWD: "${GITHUB_WORKSPACE}"
         with:
           args: npm run live
 
