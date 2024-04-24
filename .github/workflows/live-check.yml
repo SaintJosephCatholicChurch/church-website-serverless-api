@@ -25,6 +25,7 @@ jobs:
       - name: Run live check
         uses: KaneFreeman/puppeteer-headful@v18.20.2
         id: puppeteer
+        timeout-minutes: 1
         env:
           CI: "true"
           CWD: "${GITHUB_WORKSPACE}"
