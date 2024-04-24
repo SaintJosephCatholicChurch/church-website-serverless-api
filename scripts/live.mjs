@@ -69,7 +69,7 @@ export const handler = async () => {
         isLandscape: false,
         hasTouch: false,
       },
-      executablePath: process.env.CHROME_EXECUTABLE_PATH || (await chromium.executablePath()),
+      executablePath: process.env.PUPPETEER_EXEC_PATH, // set by docker container
       headless: true,
       timeout: 60000,
       ignoreHTTPSErrors: true,
