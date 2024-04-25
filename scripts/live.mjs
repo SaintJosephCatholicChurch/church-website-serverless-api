@@ -136,7 +136,7 @@ export const handler = async () => {
     start = Date.now();
 
     await page.goto(`https://www.facebook.com/stjosephchurchbluffton/videos`, {
-      waitUntil: "domcontentloaded",
+      waitUntil: "networkidle2",
       timeout: 60000,
     });
 
