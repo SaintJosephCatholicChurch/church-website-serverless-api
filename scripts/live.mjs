@@ -185,7 +185,7 @@ export const handler = async () => {
     console.log(`[pages[i].close] Execution time: ${end - start} ms`);
     start = Date.now();
 
-    await browser.close();
+    await Promise.race([browser.close(), browser.close(), browser.close()]);
 
     end = Date.now();
     console.log(`[browser.close] Execution time: ${end - start} ms`);
