@@ -6,9 +6,20 @@ import { join } from "path";
 
 const MAX_RETRIES = 3;
 
+async function closeBrowser(browser) {
+  const pages = await browser.pages();
+  for (let i = 0; i < pages.length; i++) {
+    await pages[i].close();
+  }
+
+  await Promise.race([browser.close(), browser.close(), browser.close()]);
+}
+
 export const handler = async () => {
   let attempt = 0;
   let success = false;
+
+  let browser;
 
   while (!success && attempt < MAX_RETRIES) {
     attempt += 1;
@@ -20,7 +31,7 @@ export const handler = async () => {
       let url = "";
 
       let start = Date.now();
-      const browser = await puppeteer.launch({
+      browser = await puppeteer.launch({
         args: [
           "--allow-running-insecure-content",
           "--autoplay-policy=user-gesture-required",
@@ -182,19 +193,10 @@ export const handler = async () => {
       console.log(`[attempt ${attempt}][compute] Execution time: ${end - start} ms`);
       start = Date.now();
 
-      const pages = await browser.pages();
-      for (let i = 0; i < pages.length; i++) {
-        await pages[i].close();
-      }
+      await closeBrowser(browser);
 
       end = Date.now();
-      console.log(`[attempt ${attempt}][pages[i].close] Execution time: ${end - start} ms`);
-      start = Date.now();
-
-      await Promise.race([browser.close(), browser.close(), browser.close()]);
-
-      end = Date.now();
-      console.log(`[attempt ${attempt}][browser.close] Execution time: ${end - start} ms`);
+      console.log(`[attempt ${attempt}][closeBrowser] Execution time: ${end - start} ms`);
       start = Date.now();
 
       if (url && url !== "") {
@@ -217,6 +219,8 @@ export const handler = async () => {
       success = true;
     } catch (e) {
       console.log("Error while processing...", e);
+      await closeBrowser(browser);
+      browser = null;
     }
   }
 };
