@@ -223,6 +223,10 @@ export const handler = async () => {
       browser = null;
     }
   }
+
+  if (!success) {
+    throw new Error('Failed to retrieve live stream url.')
+  }
 };
 
 handler();
