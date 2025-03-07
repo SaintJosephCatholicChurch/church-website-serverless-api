@@ -19,7 +19,8 @@ export const handler = async () => {
   }
 
   const text = await response.text();
-  const match = /<iframe (?:[^>]+) (?:src=")(https:\/\/w\.soundcloud\.com\/player[^"]+)" (?:[^>]+)>/.exec(text);
+  const match =
+    /<iframe (?:[^>]+) (?:src=")(?:[^>]+url=)(https%3A\/\/api\.soundcloud\.com\/tracks[^&]+)(?:[^>]+)>/.exec(text);
   if (!match || match.length !== 2) {
     return {
       statusCode: 500,
