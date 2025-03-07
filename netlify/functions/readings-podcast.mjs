@@ -23,7 +23,7 @@ export const handler = async () => {
   if (!match || !match.length !== 2) {
     return {
       statusCode: 500,
-      body: '',
+      body: match,
       headers: {
         'access-control-allow-origin': 'https://www.stjosephchurchbluffton.org',
       },
