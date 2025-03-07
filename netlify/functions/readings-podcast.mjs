@@ -34,7 +34,7 @@ export const handler = async () => {
   return {
     statusCode: 200,
     body: JSON.stringify({
-      url: match[1],
+      url: match[1].replace(/\//g, '%2F'),
     }),
     headers: {
       'access-control-allow-origin': 'https://www.stjosephchurchbluffton.org',
