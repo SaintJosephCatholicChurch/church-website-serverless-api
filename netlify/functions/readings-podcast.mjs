@@ -23,7 +23,7 @@ export const handler = async () => {
   if (!match || !match.length !== 2) {
     return {
       statusCode: 500,
-      body: match,
+      body: JSON.stringify(match),
       headers: {
         'access-control-allow-origin': 'https://www.stjosephchurchbluffton.org',
       },
@@ -32,9 +32,9 @@ export const handler = async () => {
 
   return {
     statusCode: 200,
-    body: {
+    body: JSON.stringify({
       url: match[1],
-    },
+    }),
     headers: {
       'access-control-allow-origin': 'https://www.stjosephchurchbluffton.org',
     },
