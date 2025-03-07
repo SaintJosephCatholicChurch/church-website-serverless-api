@@ -20,10 +20,10 @@ export const handler = async () => {
 
   const text = await response.text();
   const match = /<iframe (?:[^>]+) (?:src=")(https:\/\/w\.soundcloud\.com\/player[^"]+)" (?:[^>]+)>/.exec(text);
-  if (!match || !match.length !== 2) {
+  if (!match || match.length !== 2) {
     return {
       statusCode: 500,
-      body: JSON.stringify(match),
+      body: '',
       headers: {
         'access-control-allow-origin': 'https://www.stjosephchurchbluffton.org',
       },
