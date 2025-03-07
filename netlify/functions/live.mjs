@@ -3,9 +3,9 @@ export const handler = async (event) => {
 
   return {
     statusCode: 200,
-    body: JSON.stringify({ isStreaming: isStreaming ?? false, url: url ?? "" }),
+    body: JSON.stringify({ isStreaming: isStreaming ?? false, url: url ?? '' }),
     headers: {
-      "access-control-allow-origin": "https://www.stjosephchurchbluffton.org",
+      'access-control-allow-origin': 'https://www.stjosephchurchbluffton.org',
     },
   };
 };

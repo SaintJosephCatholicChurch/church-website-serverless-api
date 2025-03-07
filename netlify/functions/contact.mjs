@@ -1,12 +1,12 @@
-import nodemailer from "nodemailer";
+import nodemailer from 'nodemailer';
 
 export const handler = async (event) => {
-  if (event.httpMethod !== "POST") {
+  if (event.httpMethod !== 'POST') {
     return {
       statusCode: 501,
-      body: "Not implemented",
+      body: 'Not implemented',
       headers: {
-        "access-control-allow-origin": "https://www.stjosephchurchbluffton.org",
+        'access-control-allow-origin': 'https://www.stjosephchurchbluffton.org',
       },
     };
   }
@@ -14,25 +14,25 @@ export const handler = async (event) => {
   const body = JSON.parse(event.body);
   if (
     !body.email ||
-    body.email === "" ||
+    body.email === '' ||
     !body.name ||
-    body.name === "" ||
+    body.name === '' ||
     !body.subject ||
-    body.subject === "" ||
+    body.subject === '' ||
     !body.comment ||
-    body.comment === ""
+    body.comment === ''
   ) {
     return {
       statusCode: 501,
-      body: "Bad input",
+      body: 'Bad input',
       headers: {
-        "access-control-allow-origin": "https://www.stjosephchurchbluffton.org",
+        'access-control-allow-origin': 'https://www.stjosephchurchbluffton.org',
       },
     };
   }
 
   const transporter = nodemailer.createTransport({
-    host: "smtppro.zoho.com",
+    host: 'smtppro.zoho.com',
     port: 465,
     secure: true,
     auth: {
@@ -42,12 +42,12 @@ export const handler = async (event) => {
   });
 
   const info = await transporter.sendMail({
-    from: "no-reply@stjosephchurchbluffton.org",
+    from: 'no-reply@stjosephchurchbluffton.org',
     to: process.env.CONTACT_EMAIL,
     replyTo: body.email,
     subject: `New Contact Form Submission [${body.subject}]`,
     list: {
-      unsubscribe: "admin@stjosephchurchbluffton.org?subject=unsubscribe",
+      unsubscribe: 'admin@stjosephchurchbluffton.org?subject=unsubscribe',
     },
     html: `<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:o="urn:schemas-microsoft-com:office:office">
@@ -224,18 +224,18 @@ span.MsoHyperlinkFollowed {
   if (info.messageId) {
     return {
       statusCode: 200,
-      body: "Contact email sent",
+      body: 'Contact email sent',
       headers: {
-        "access-control-allow-origin": "https://www.stjosephchurchbluffton.org",
+        'access-control-allow-origin': 'https://www.stjosephchurchbluffton.org',
       },
     };
   }
 
   return {
     statusCode: 400,
-    body: "Unable to send contact email",
+    body: 'Unable to send contact email',
     headers: {
-      "access-control-allow-origin": "https://www.stjosephchurchbluffton.org",
+      'access-control-allow-origin': 'https://www.stjosephchurchbluffton.org',
     },
   };
 };

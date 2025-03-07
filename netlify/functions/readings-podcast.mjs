@@ -1,7 +1,13 @@
 import fetch from 'node-fetch';
+import { format } from 'date-fns';
 
 export const handler = async () => {
-  const response = await fetch('https://bible.usccb.org/readings.rss');
+  const response = await fetch(
+    `https://bible.usccb.org/podcasts/audio/daily-mass-reading-podcast-${format(
+      new Date(),
+      'MMMM-d-yyyy'
+    ).toLowerCase()}`
+  );
   if (!response.ok) {
     return {
       statusCode: 500,
