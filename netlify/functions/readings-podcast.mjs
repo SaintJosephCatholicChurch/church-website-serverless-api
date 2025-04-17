@@ -77,7 +77,7 @@ async function getPodcastUrl() {
 
 export const handler = async () => {
   const podcastUrl = await getPodcastUrl();
-  if (podcastUrl !== string) {
+  if (typeof podcastUrl !== 'string') {
     return podcastUrl;
   }
 
