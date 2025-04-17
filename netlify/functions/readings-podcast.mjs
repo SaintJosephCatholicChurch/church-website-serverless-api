@@ -2,16 +2,39 @@ import fetch from 'node-fetch';
 import { format } from 'date-fns';
 
 export const handler = async () => {
-  const response = await fetch(
-    `https://bible.usccb.org/podcasts/audio/daily-mass-reading-podcast-${format(
+  const podcastsResponse = await fetch(`https://bible.usccb.org/podcasts/audio`);
+  if (!podcastsResponse.ok) {
+    return {
+      statusCode: 500,
+      body: 'Failed to fetch podcasts list page',
+      headers: {
+        'access-control-allow-origin': 'https://www.stjosephchurchbluffton.org',
+      },
+    };
+  }
+
+  const podcastPageText = await response.text();
+  const podcastPageMatch = new RegExp(
+    `<a href="(\/podcasts\/audio\/daily-mass-reading-podcast-${format(
       new Date(),
       'MMMM-d-yyyy'
-    ).toLowerCase()}`
-  );
+    ).toLowerCase()}[a-zA-Z0-9_-]+)">`
+  ).exec(podcastPageText);
+  if (!podcastPageMatch || podcastPageMatch.length !== 2) {
+    return {
+      statusCode: 500,
+      body: 'Failed to extract podcast page url',
+      headers: {
+        'access-control-allow-origin': 'https://www.stjosephchurchbluffton.org',
+      },
+    };
+  }
+
+  const response = await fetch(podcastPageMatch);
   if (!response.ok) {
     return {
       statusCode: 500,
-      body: '',
+      body: 'Failed to fetch podcast page',
       headers: {
         'access-control-allow-origin': 'https://www.stjosephchurchbluffton.org',
       },
@@ -24,7 +47,7 @@ export const handler = async () => {
   if (!match || match.length !== 2) {
     return {
       statusCode: 500,
-      body: '',
+      body: 'Failed to extract podcast soundcloud url',
       headers: {
         'access-control-allow-origin': 'https://www.stjosephchurchbluffton.org',
       },
