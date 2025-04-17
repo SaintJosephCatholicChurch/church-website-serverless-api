@@ -13,7 +13,7 @@ export const handler = async () => {
     };
   }
 
-  const podcastPageText = await response.text();
+  const podcastPageText = await podcastsResponse.text();
   const podcastPageMatch = new RegExp(
     `<a href="(\/podcasts\/audio\/daily-mass-reading-podcast-${format(
       new Date(),
