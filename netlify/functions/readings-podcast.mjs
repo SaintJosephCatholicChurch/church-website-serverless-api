@@ -30,7 +30,7 @@ export const handler = async () => {
     };
   }
 
-  const response = await fetch(podcastPageMatch);
+  const response = await fetch(podcastPageMatch[1]);
   if (!response.ok) {
     return {
       statusCode: 500,
