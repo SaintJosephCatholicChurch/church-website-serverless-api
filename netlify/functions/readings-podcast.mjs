@@ -30,7 +30,7 @@ export const handler = async () => {
     };
   }
 
-  const response = await fetch(podcastPageMatch[1]);
+  const response = await fetch(`https://bible.usccb.org${podcastPageMatch[1]}`);
   if (!response.ok) {
     return {
       statusCode: 500,
