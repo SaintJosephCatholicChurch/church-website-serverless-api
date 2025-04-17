@@ -52,7 +52,7 @@ async function getPodcastUrl() {
       'MMMM-d-yyyy'
     ).toLowerCase()}-${getLectionaryYear()}[a-zA-Z0-9_-]+)">`
   ).exec(podcastPageText);
-  if (podcastPageMatch && podcastPageMatch.length === 2) {
+  if (podcastPageMatchWithYear && podcastPageMatchWithYear.length === 2) {
     return podcastPageMatchWithYear[1];
   }
 
