@@ -50,7 +50,7 @@ async function getPodcastUrl() {
     `<a href="(\/podcasts\/audio\/daily-mass-reading-podcast-${format(
       new Date(),
       'MMMM-d-yyyy'
-    ).toLowerCase()}-${getLectionaryYear()}[a-zA-Z0-9_-]+)">`
+    ).toLowerCase()}-${getLectionaryYear()}[a-zA-Z0-9_-]*)">`
   ).exec(podcastPageText);
   if (podcastPageMatchWithYear && podcastPageMatchWithYear.length === 2) {
     return podcastPageMatchWithYear[1];
@@ -60,7 +60,7 @@ async function getPodcastUrl() {
     `<a href="(\/podcasts\/audio\/daily-mass-reading-podcast-${format(
       new Date(),
       'MMMM-d-yyyy'
-    ).toLowerCase()}[a-zA-Z0-9_-]+)">`
+    ).toLowerCase()}[a-zA-Z0-9_-]*)">`
   ).exec(podcastPageText);
   if (!podcastPageMatch || podcastPageMatch.length !== 2) {
     return {
