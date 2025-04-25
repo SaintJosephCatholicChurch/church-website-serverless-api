@@ -1,14 +1,9 @@
 import nodemailer from 'nodemailer';
+import { generateResponse } from '../../util/response.mjs';
 
 export const handler = async (event) => {
   if (event.httpMethod !== 'POST') {
-    return {
-      statusCode: 501,
-      body: 'Not implemented',
-      headers: {
-        'access-control-allow-origin': 'https://www.stjosephchurchbluffton.org',
-      },
-    };
+    return generateResponse(event, 501, 'Not implemented');
   }
 
   const body = JSON.parse(event.body);
@@ -22,13 +17,7 @@ export const handler = async (event) => {
     !body.comment ||
     body.comment === ''
   ) {
-    return {
-      statusCode: 501,
-      body: 'Bad input',
-      headers: {
-        'access-control-allow-origin': 'https://www.stjosephchurchbluffton.org',
-      },
-    };
+    return generateResponse(event, 400, 'Bad input');
   }
 
   const transporter = nodemailer.createTransport({
@@ -221,21 +210,9 @@ span.MsoHyperlinkFollowed {
 `,
   });
 
-  if (info.messageId) {
-    return {
-      statusCode: 200,
-      body: 'Contact email sent',
-      headers: {
-        'access-control-allow-origin': 'https://www.stjosephchurchbluffton.org',
-      },
-    };
+  if (!info.messageId) {
+    return generateResponse(event, 500, 'Unable to send contact email');
   }
 
-  return {
-    statusCode: 400,
-    body: 'Unable to send contact email',
-    headers: {
-      'access-control-allow-origin': 'https://www.stjosephchurchbluffton.org',
-    },
-  };
+  return generateResponse(event, 200, 'Contact email sent');
 };

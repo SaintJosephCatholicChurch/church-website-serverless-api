@@ -1,5 +1,6 @@
 import fetch from 'node-fetch';
 import { format } from 'date-fns';
+import { generateResponse } from '../../util/response.mjs';
 
 function getLectionaryYear(date = new Date()) {
   const liturgicalYear = getLiturgicalYear(date);
@@ -33,16 +34,10 @@ function getFirstAdventSunday(christmas) {
   return fourthSunday;
 }
 
-async function getPodcastUrl() {
+async function getPodcastUrl(event) {
   const podcastsResponse = await fetch(`https://bible.usccb.org/podcasts/audio`);
   if (!podcastsResponse.ok) {
-    return {
-      statusCode: 500,
-      body: 'Failed to fetch podcasts list page',
-      headers: {
-        'access-control-allow-origin': 'https://www.stjosephchurchbluffton.org',
-      },
-    };
+    return generateResponse(event, 500, 'Failed to fetch podcasts list page');
   }
 
   const podcastPageText = await podcastsResponse.text();
@@ -63,55 +58,35 @@ async function getPodcastUrl() {
     ).toLowerCase()}[a-zA-Z0-9_-]*)">`
   ).exec(podcastPageText);
   if (!podcastPageMatch || podcastPageMatch.length !== 2) {
-    return {
-      statusCode: 500,
-      body: 'Failed to extract podcast page url',
-      headers: {
-        'access-control-allow-origin': 'https://www.stjosephchurchbluffton.org',
-      },
-    };
+    return generateResponse(event, 500, 'Failed to extract podcast page url');
   }
 
   return podcastPageMatch[1];
 }
 
-export const handler = async () => {
-  const podcastUrl = await getPodcastUrl();
+export const handler = async (event) => {
+  const podcastUrl = await getPodcastUrl(event);
   if (typeof podcastUrl !== 'string') {
     return podcastUrl;
   }
 
   const response = await fetch(`https://bible.usccb.org${podcastUrl}`);
   if (!response.ok) {
-    return {
-      statusCode: 500,
-      body: 'Failed to fetch podcast page',
-      headers: {
-        'access-control-allow-origin': 'https://www.stjosephchurchbluffton.org',
-      },
-    };
+    return generateResponse(event, 500, 'Failed to fetch podcast page');
   }
 
   const text = await response.text();
   const match =
     /<iframe (?:[^>]+) (?:src=")(?:[^>]+url=)(https%3A\/\/api\.soundcloud\.com\/tracks[^&]+)(?:[^>]+)>/.exec(text);
   if (!match || match.length !== 2) {
-    return {
-      statusCode: 500,
-      body: 'Failed to extract podcast soundcloud url',
-      headers: {
-        'access-control-allow-origin': 'https://www.stjosephchurchbluffton.org',
-      },
-    };
+    return generateResponse(event, 500, 'Failed to extract podcast soundcloud url');
   }
 
-  return {
-    statusCode: 200,
-    body: JSON.stringify({
+  return generateResponse(
+    event,
+    200,
+    JSON.stringify({
       url: match[1],
-    }),
-    headers: {
-      'access-control-allow-origin': 'https://www.stjosephchurchbluffton.org',
-    },
-  };
+    })
+  );
 };
