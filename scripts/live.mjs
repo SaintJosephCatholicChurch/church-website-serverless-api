@@ -202,7 +202,7 @@ export const handler = async () => {
       if (url && url !== '') {
         console.log('[attempt ${attempt}][writing data]', { isStreaming, url });
         writeFileSync(
-          join(process.env.GITHUB_WORKSPACE, 'functions/data/live.json'),
+          join(process.env.GITHUB_WORKSPACE, 'netlify/functions/data/live.json'),
           JSON.stringify({ isStreaming, url }, null, 2)
         );
 

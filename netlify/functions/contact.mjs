@@ -1,8 +1,7 @@
-import type { Handler } from '@netlify/functions';
 import nodemailer from 'nodemailer';
 import { generateResponse } from './util/response.mjs';
 
-export const handler: Handler = async (event) => {
+export const handler = async (event) => {
   if (event.httpMethod !== 'POST') {
     return generateResponse(event, 501, 'Not implemented');
   }

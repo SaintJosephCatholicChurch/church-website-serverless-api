@@ -1,6 +1,5 @@
 import fetch from 'node-fetch';
 import { format } from 'date-fns';
-import type { Handler, HandlerEvent } from '@netlify/functions';
 import { generateResponse } from './util/response.mjs';
 
 function getLectionaryYear(date = new Date()) {
@@ -27,7 +26,7 @@ function getLiturgicalYear(date = new Date()) {
 }
 
 // Helper: Find First Sunday of Advent
-function getFirstAdventSunday(christmas: Date) {
+function getFirstAdventSunday(christmas) {
   const fourthSunday = new Date(christmas);
   fourthSunday.setDate(christmas.getDate() - 28);
   const dayOfWeek = fourthSunday.getDay();
@@ -35,7 +34,7 @@ function getFirstAdventSunday(christmas: Date) {
   return fourthSunday;
 }
 
-async function getPodcastUrl(event: HandlerEvent) {
+async function getPodcastUrl(event) {
   const podcastsResponse = await fetch(`https://bible.usccb.org/podcasts/audio`);
   if (!podcastsResponse.ok) {
     return generateResponse(event, 500, 'Failed to fetch podcasts list page');
@@ -65,7 +64,7 @@ async function getPodcastUrl(event: HandlerEvent) {
   return podcastPageMatch[1];
 }
 
-export const handler: Handler = async (event) => {
+export const handler = async (event) => {
   const podcastUrl = await getPodcastUrl(event);
   if (typeof podcastUrl !== 'string') {
     return podcastUrl;
