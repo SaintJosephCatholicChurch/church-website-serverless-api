@@ -12,6 +12,7 @@
     "url": "https://github.com/SaintJosephCatholicChurch/church-website-serverless-api/issues"
   },
   "homepage": "https://github.com/SaintJosephCatholicChurch/church-website-serverless-api#readme",
+  "type": "module",
   "scripts": {
     "live": "node ./scripts/live.mjs -ci"
   },
