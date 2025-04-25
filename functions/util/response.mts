@@ -1,5 +1,7 @@
-export function generateAccessControlAllowOrigin(event) {
-  const origin = event.request.headers.get('origin');
+import type { HandlerEvent } from '@netlify/functions';
+
+export function generateAccessControlAllowOrigin(event: HandlerEvent) {
+  const origin = event.headers['origin'] ?? '';
   if (/https:\/\/[a-z]+\.stjosephchurchbluffton\.org/i.test(origin)) {
     return origin;
   }
@@ -7,7 +9,7 @@ export function generateAccessControlAllowOrigin(event) {
   return 'https://www.stjosephchurchbluffton.org';
 }
 
-export function generateResponse(event, statusCode, body) {
+export function generateResponse(event: HandlerEvent, statusCode: number, body: any) {
   return {
     statusCode,
     body,
