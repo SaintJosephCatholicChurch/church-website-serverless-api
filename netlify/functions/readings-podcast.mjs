@@ -34,34 +34,42 @@ function getFirstAdventSunday(christmas) {
   return fourthSunday;
 }
 
-async function getPodcastUrl(event) {
-  const podcastsResponse = await fetch(`https://bible.usccb.org/podcasts/audio`);
+async function getPodcastUrlFromPage(event, date, page) {
+  const podcastsResponse = await fetch(`https://bible.usccb.org/podcasts/audio?page=${page}`);
   if (!podcastsResponse.ok) {
     return generateResponse(event, 500, 'Failed to fetch podcasts list page');
   }
 
   const podcastPageText = await podcastsResponse.text();
   const podcastPageMatchWithYear = new RegExp(
-    `<a href="(\/podcasts\/audio\/daily-mass-reading-podcast-${format(
-      new Date(),
-      'MMMM-d-yyyy'
-    ).toLowerCase()}-${getLectionaryYear()}[a-zA-Z0-9_-]*)">`
+    `<a href="(\/podcasts\/audio\/daily-mass-reading-podcast-${date}-${getLectionaryYear()}[a-zA-Z0-9_-]*)">`
   ).exec(podcastPageText);
   if (podcastPageMatchWithYear && podcastPageMatchWithYear.length === 2) {
     return podcastPageMatchWithYear[1];
   }
 
   const podcastPageMatch = new RegExp(
-    `<a href="(\/podcasts\/audio\/daily-mass-reading-podcast-${format(
-      new Date(),
-      'MMMM-d-yyyy'
-    ).toLowerCase()}[a-zA-Z0-9_-]*)">`
+    `<a href="(\/podcasts\/audio\/daily-mass-reading-podcast-${date}[a-zA-Z0-9_-]*)">`
   ).exec(podcastPageText);
   if (!podcastPageMatch || podcastPageMatch.length !== 2) {
-    return generateResponse(event, 500, 'Failed to extract podcast page url');
+    return null;
   }
 
   return podcastPageMatch[1];
+}
+
+async function getPodcastUrl(event) {
+  const date = format(new Date(), 'MMMM-d-yyyy').toLowerCase();
+  const pagesToCheck = [1, 2, 3];
+
+  for (const page of pagesToCheck) {
+    const response = await getPodcastUrlFromPage(event, date, page);
+    if (response) {
+      return response;
+    }
+  }
+
+  return generateResponse(event, 500, 'Failed to extract podcast page url');
 }
 
 export const handler = async (event) => {
