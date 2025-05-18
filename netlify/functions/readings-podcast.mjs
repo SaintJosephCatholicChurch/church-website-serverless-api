@@ -60,7 +60,7 @@ async function getPodcastUrlFromPage(event, date, page) {
 
 async function getPodcastUrl(event) {
   const date = format(new Date(), 'MMMM-d-yyyy').toLowerCase();
-  const pagesToCheck = [1, 2, 3];
+  const pagesToCheck = [0, 1, 2];
 
   for (const page of pagesToCheck) {
     const response = await getPodcastUrlFromPage(event, date, page);
