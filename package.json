@@ -16,13 +16,13 @@
     "live": "node ./scripts/live.mjs -ci"
   },
   "dependencies": {
-    "@sparticuz/chromium": "123.0.1",
-    "date-fns": "3.6.0",
-    "dotenv": "16.4.5",
-    "fast-xml-parser": "4.3.6",
+    "@sparticuz/chromium": "138.0.2",
+    "date-fns": "4.1.0",
+    "dotenv": "17.2.1",
+    "fast-xml-parser": "5.2.5",
     "node-fetch": "3.3.2",
-    "node-html-parser": "6.1.13",
-    "nodemailer": "6.9.13",
-    "puppeteer-core": "22.6.5"
+    "node-html-parser": "7.0.1",
+    "nodemailer": "7.0.5",
+    "puppeteer-core": "24.17.0"
   }
 }
