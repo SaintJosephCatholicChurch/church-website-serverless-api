@@ -152,7 +152,7 @@ export const handler = async () => {
       console.log(`[attempt ${attempt}][setUserAgent] Execution time: ${end - start} ms`);
       start = Date.now();
 
-      await page.goto(`https://www.facebook.com/stjosephchurchbluffton/videos`, {
+      await page.goto(`https://www.facebook.com/stjosephchurchbluffton/live_videos`, {
         waitUntil: 'domcontentloaded',
         timeout: 60000,
       });
@@ -161,7 +161,7 @@ export const handler = async () => {
       console.log(`[attempt ${attempt}][page.goto] Execution time: ${end - start} ms`);
       start = Date.now();
 
-      await page.waitForFunction('document.querySelector("body").innerText.includes("Videos")');
+      await page.waitForFunction('document.querySelector("body").innerText.includes("Past live videos")');
 
       end = Date.now();
       console.log(`[attempt ${attempt}][page.waitForFunction] Execution time: ${end - start} ms`);
@@ -170,9 +170,7 @@ export const handler = async () => {
       const result = await page.evaluate(async () => {
         let links = document.querySelectorAll('a');
         for (let link of links) {
-          const match = new RegExp(
-            `https:\/\/www\.facebook\.com\/stjosephchurchbluffton\/videos\/[a-zA-Z0-9_-]+\/([0-9]+)\/`
-          ).exec(link.href);
+          const match = new RegExp(`https:\/\/www\.facebook\.com\/[0-9]+\/videos\/([0-9]+)`).exec(link.href);
 
           if (match && match.length >= 2) {
             return {
