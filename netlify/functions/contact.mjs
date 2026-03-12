@@ -21,12 +21,12 @@ export const handler = async (event) => {
   }
 
   const transporter = nodemailer.createTransport({
-    host: 'smtppro.zoho.com',
+    host: 'smtp.gmail.com',
     port: 465,
     secure: true,
     auth: {
-      user: process.env.ZOHO_USERNAME,
-      pass: process.env.ZOHO_PASSWORD,
+      user: process.env.GMAIL_USERNAME,
+      pass: process.env.GMAIL_PASSWORD,
     },
   });
 
