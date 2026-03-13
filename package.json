@@ -18,11 +18,11 @@
   "dependencies": {
     "@sparticuz/chromium": "138.0.2",
     "date-fns": "4.1.0",
-    "dotenv": "17.2.1",
-    "fast-xml-parser": "5.2.5",
+    "dotenv": "17.3.1",
+    "fast-xml-parser": "5.5.5",
     "node-fetch": "3.3.2",
-    "node-html-parser": "7.0.1",
-    "nodemailer": "7.0.5",
-    "puppeteer-core": "24.17.0"
+    "node-html-parser": "7.1.0",
+    "nodemailer": "7.0.13",
+    "puppeteer-core": "24.39.1"
   }
 }
