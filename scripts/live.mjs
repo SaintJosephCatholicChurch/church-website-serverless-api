@@ -5,6 +5,7 @@ import 'dotenv/config';
 import { join } from 'path';
 
 const MAX_RETRIES = 3;
+const WORKSPACE_ROOT = process.env.GITHUB_WORKSPACE || process.cwd();
 
 async function closeBrowser(browser) {
   const pages = await browser.pages();
@@ -87,7 +88,6 @@ export const handler = async () => {
           isLandscape: false,
           hasTouch: false,
         },
-        executablePath: process.env.PUPPETEER_EXEC_PATH, // set by docker container
         executablePath: process.env.CHROME_EXECUTABLE_PATH || (await chromium.executablePath()),
         headless: true,
         timeout: 60000,
@@ -145,7 +145,7 @@ export const handler = async () => {
       start = Date.now();
 
       await page.setUserAgent(
-        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36'
+        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36',
       );
 
       end = Date.now();
@@ -171,7 +171,7 @@ export const handler = async () => {
         let links = document.querySelectorAll('a');
         for (let link of links) {
           const match = new RegExp(
-            `https:\/\/www\.facebook\.com\/stjosephchurchbluffton\/videos\/[a-zA-Z0-9_-]+\/([0-9]+)\/`
+            `https:\/\/www\.facebook\.com\/stjosephchurchbluffton\/videos\/[a-zA-Z0-9_-]+\/([0-9]+)\/`,
           ).exec(link.href);
 
           if (match && match.length >= 2) {
@@ -202,8 +202,8 @@ export const handler = async () => {
       if (url && url !== '') {
         console.log('[attempt ${attempt}][writing data]', { isStreaming, url });
         writeFileSync(
-          join(process.env.GITHUB_WORKSPACE, 'netlify/functions/data/live.json'),
-          JSON.stringify({ isStreaming, url }, null, 2)
+          join(WORKSPACE_ROOT, 'netlify/functions/data/live.json'),
+          JSON.stringify({ isStreaming, url }, null, 2),
         );
 
         end = Date.now();
