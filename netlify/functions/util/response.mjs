@@ -7,12 +7,22 @@ export function generateAccessControlAllowOrigin(event) {
   return 'https://www.stjosephchurchbluffton.org';
 }
 
-export function generateResponse(event, statusCode, body) {
+export function generateResponse(event, statusCode, body, headers = {}) {
   return {
     statusCode,
     body,
     headers: {
       'access-control-allow-origin': generateAccessControlAllowOrigin(event),
+      'access-control-allow-methods': 'GET, POST, OPTIONS',
+      'access-control-allow-headers': 'Content-Type',
+      ...headers,
     },
   };
+}
+
+export function generateJsonResponse(event, statusCode, body, headers = {}) {
+  return generateResponse(event, statusCode, JSON.stringify(body), {
+    'content-type': 'application/json; charset=utf-8',
+    ...headers,
+  });
 }
