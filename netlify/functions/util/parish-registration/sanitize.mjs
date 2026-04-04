@@ -21,6 +21,8 @@ const normalizeChoice = (value) => {
   return normalizedValue;
 };
 
+const normalizeState = (value) => normalizeString(value).toUpperCase();
+
 const sanitizeSacraments = (value = {}) => ({
   baptism: {
     received: normalizeBoolean(value?.baptism?.received),
@@ -41,20 +43,23 @@ const sanitizeSacraments = (value = {}) => ({
 });
 
 const sanitizeAdult = (value = {}) => ({
-  firstNameNickname: normalizeString(value.firstNameNickname),
+  parishStatus: normalizeChoice(value.parishStatus),
+  role: normalizeString(value.role),
+  firstName: normalizeString(value.firstName) || normalizeString(value.firstNameNickname),
+  nickname: normalizeString(value.nickname),
+  maidenName: normalizeString(value.maidenName),
   gender: normalizeChoice(value.gender),
   dateOfBirth: normalizeDate(value.dateOfBirth),
-  maritalStatus: normalizeChoice(value.maritalStatus),
-  validCatholicMarriage: normalizeChoice(value.validCatholicMarriage),
-  parishStatus: normalizeChoice(value.parishStatus),
-  occupationEmployer: normalizeString(value.occupationEmployer),
-  workPhoneOrCell: normalizeString(value.workPhoneOrCell),
   email: normalizeString(value.email),
-  role: normalizeString(value.role),
+  workPhone: normalizeString(value.workPhone) || normalizeString(value.workPhoneOrCell),
+  cellPhone: normalizeString(value.cellPhone),
   firstLanguage: normalizeString(value.firstLanguage),
-  maidenName: normalizeString(value.maidenName),
+  occupation: normalizeString(value.occupation) || normalizeString(value.occupationEmployer),
+  employer: normalizeString(value.employer),
   birthplace: normalizeString(value.birthplace),
   isCatholic: normalizeChoice(value.isCatholic),
+  maritalStatus: normalizeChoice(value.maritalStatus),
+  validCatholicMarriage: normalizeChoice(value.validCatholicMarriage),
   sacraments: sanitizeSacraments(value.sacraments),
 });
 
@@ -81,7 +86,7 @@ export const sanitizeParishRegistration = (value = {}) => ({
     address: normalizeString(value?.family?.address),
     addressLine2: normalizeString(value?.family?.addressLine2),
     city: normalizeString(value?.family?.city),
-    state: normalizeString(value?.family?.state),
+    state: normalizeState(value?.family?.state),
     zip: normalizeString(value?.family?.zip),
     homePhone: normalizeString(value?.family?.homePhone),
     emergencyPhone: normalizeString(value?.family?.emergencyPhone),

@@ -64,18 +64,19 @@ export const buildParishRegistrationSummaryHtml = (value) => {
   const adultSections = value.adults
     .map((adult, index) => {
       const rows = [
-        { label: 'First Name / Nickname', value: adult.firstNameNickname },
-        { label: 'Gender', value: adult.gender },
-        { label: 'DOB', value: adult.dateOfBirth },
-        { label: 'Marital Status', value: adult.maritalStatus },
-        { label: 'Valid Catholic Marriage?', value: formatBooleanChoice(adult.validCatholicMarriage) },
         { label: 'Parish Status', value: adult.parishStatus },
         { label: 'Role', value: adult.role },
-        { label: 'Occupation / Employer', value: adult.occupationEmployer },
-        { label: 'Work Phone / Cell', value: adult.workPhoneOrCell },
-        { label: 'Email', value: adult.email },
-        { label: 'First Language', value: adult.firstLanguage },
+        { label: 'First Name', value: adult.firstName },
+        { label: 'Nickname', value: adult.nickname },
         { label: 'Maiden Name', value: adult.maidenName },
+        { label: 'Gender', value: adult.gender },
+        { label: 'DOB', value: adult.dateOfBirth },
+        { label: 'Email', value: adult.email },
+        { label: 'Work Phone', value: adult.workPhone },
+        { label: 'Cell Phone', value: adult.cellPhone },
+        { label: 'First Language', value: adult.firstLanguage },
+        { label: 'Occupation', value: adult.occupation },
+        { label: 'Employer', value: adult.employer },
         { label: 'Birthplace', value: adult.birthplace },
         { label: 'Catholic?', value: formatBooleanChoice(adult.isCatholic) },
         { label: 'Baptism', value: formatSacrament('Baptism', adult.sacraments.baptism).replace('Baptism: ', '') },
@@ -91,6 +92,8 @@ export const buildParishRegistrationSummaryHtml = (value) => {
           label: 'Confirmation',
           value: formatSacrament('Confirmation', adult.sacraments.confirmation).replace('Confirmation: ', ''),
         },
+        { label: 'Marital Status', value: adult.maritalStatus },
+        { label: 'Valid Catholic Marriage?', value: formatBooleanChoice(adult.validCatholicMarriage) },
       ];
 
       return `<h3>Adult Member ${index + 1}</h3>${buildList(rows)}`;

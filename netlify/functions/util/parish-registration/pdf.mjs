@@ -152,18 +152,19 @@ export const generateParishRegistrationPdf = async (value) => {
 
   value.adults.forEach((adult, index) => {
     drawSectionTitle(`Adult Member ${index + 1}`);
-    drawParagraph('First Name / Nickname', adult.firstNameNickname);
-    drawParagraph('Gender', adult.gender);
-    drawParagraph('DOB', adult.dateOfBirth);
-    drawParagraph('Marital Status', adult.maritalStatus);
-    drawParagraph('Valid Catholic Marriage?', formatChoice(adult.validCatholicMarriage));
     drawParagraph('Parish Status', adult.parishStatus);
     drawParagraph('Role', adult.role);
-    drawParagraph('Occupation / Employer', adult.occupationEmployer);
-    drawParagraph('Work Phone / Cell', adult.workPhoneOrCell);
-    drawParagraph('Email', adult.email);
-    drawParagraph('First Language', adult.firstLanguage);
+    drawParagraph('First Name', adult.firstName);
+    drawParagraph('Nickname', adult.nickname);
     drawParagraph('Maiden Name', adult.maidenName);
+    drawParagraph('Gender', adult.gender);
+    drawParagraph('DOB', adult.dateOfBirth);
+    drawParagraph('Email', adult.email);
+    drawParagraph('Work Phone', adult.workPhone);
+    drawParagraph('Cell Phone', adult.cellPhone);
+    drawParagraph('First Language', adult.firstLanguage);
+    drawParagraph('Occupation', adult.occupation);
+    drawParagraph('Employer', adult.employer);
     drawParagraph('Birthplace', adult.birthplace);
     drawParagraph('Catholic?', formatChoice(adult.isCatholic));
     drawParagraph('Baptism', formatSacrament('Baptism', adult.sacraments.baptism).replace('Baptism: ', ''));
@@ -176,6 +177,8 @@ export const generateParishRegistrationPdf = async (value) => {
       'Confirmation',
       formatSacrament('Confirmation', adult.sacraments.confirmation).replace('Confirmation: ', ''),
     );
+    drawParagraph('Marital Status', adult.maritalStatus);
+    drawParagraph('Valid Catholic Marriage?', formatChoice(adult.validCatholicMarriage));
   });
 
   drawSectionTitle('Children / Dependents');

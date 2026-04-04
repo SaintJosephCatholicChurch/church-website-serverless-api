@@ -1,10 +1,64 @@
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const DATE_REGEX = /^\d{4}-\d{2}-\d{2}$/;
 const PHONE_REGEX = /^\(\d{3}\) \d{3}-\d{4}$/;
+const ZIP_REGEX = /^\d{5}(?:-\d{4})?$/;
 const YES_NO_VALUES = new Set(['', 'yes', 'no']);
 const GENDER_VALUES = new Set(['', 'male', 'female']);
 const PARISH_STATUS_VALUES = new Set(['', 'active', 'inactive']);
 const MARITAL_STATUS_VALUES = new Set(['', 'single', 'married', 'separated', 'divorced', 'annulled', 'widowed']);
+const STATE_VALUES = new Set([
+  '',
+  'AL',
+  'AK',
+  'AZ',
+  'AR',
+  'CA',
+  'CO',
+  'CT',
+  'DE',
+  'FL',
+  'GA',
+  'HI',
+  'ID',
+  'IL',
+  'IN',
+  'IA',
+  'KS',
+  'KY',
+  'LA',
+  'ME',
+  'MD',
+  'MA',
+  'MI',
+  'MN',
+  'MS',
+  'MO',
+  'MT',
+  'NE',
+  'NV',
+  'NH',
+  'NJ',
+  'NM',
+  'NY',
+  'NC',
+  'ND',
+  'OH',
+  'OK',
+  'OR',
+  'PA',
+  'RI',
+  'SC',
+  'SD',
+  'TN',
+  'TX',
+  'UT',
+  'VT',
+  'VA',
+  'WA',
+  'WV',
+  'WI',
+  'WY',
+]);
 const SACRAMENT_KEYS = ['baptism', 'eucharist', 'reconciliation', 'confirmation'];
 
 const isValidDate = (value) => {
@@ -37,6 +91,12 @@ const pushIfInvalidDate = (errors, path, value) => {
 const pushIfInvalidPhone = (errors, path, value) => {
   if (value !== '' && !PHONE_REGEX.test(value)) {
     errors.push({ path, message: 'Invalid phone number. Include area code.' });
+  }
+};
+
+const pushIfInvalidZip = (errors, path, value) => {
+  if (value !== '' && !ZIP_REGEX.test(value)) {
+    errors.push({ path, message: 'Invalid ZIP code.' });
   }
 };
 
@@ -73,6 +133,8 @@ export const validateParishRegistration = (value) => {
   pushIfInvalidDate(errors, 'family.registrationDate', value.family.registrationDate);
   pushIfInvalidPhone(errors, 'family.homePhone', value.family.homePhone);
   pushIfInvalidPhone(errors, 'family.emergencyPhone', value.family.emergencyPhone);
+  pushIfInvalidZip(errors, 'family.zip', value.family.zip);
+  pushIfInvalidChoice(errors, 'family.state', value.family.state, STATE_VALUES);
 
   if (!Array.isArray(value.adults) || value.adults.length !== 2) {
     errors.push({ path: 'adults', message: 'Exactly two adult members are required.' });
@@ -89,7 +151,8 @@ export const validateParishRegistration = (value) => {
     pushIfInvalidChoice(errors, `adults.${index}.parishStatus`, adult.parishStatus, PARISH_STATUS_VALUES);
     pushIfInvalidChoice(errors, `adults.${index}.isCatholic`, adult.isCatholic, YES_NO_VALUES);
     pushIfInvalidEmail(errors, `adults.${index}.email`, adult.email);
-    pushIfInvalidPhone(errors, `adults.${index}.workPhoneOrCell`, adult.workPhoneOrCell);
+    pushIfInvalidPhone(errors, `adults.${index}.workPhone`, adult.workPhone);
+    pushIfInvalidPhone(errors, `adults.${index}.cellPhone`, adult.cellPhone);
     pushIfInvalidDate(errors, `adults.${index}.dateOfBirth`, adult.dateOfBirth);
     validateSacraments(errors, `adults.${index}.sacraments`, adult.sacraments);
   });
