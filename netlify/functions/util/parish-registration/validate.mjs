@@ -1,5 +1,6 @@
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const DATE_REGEX = /^\d{4}-\d{2}-\d{2}$/;
+const PHONE_REGEX = /^\(\d{3}\) \d{3}-\d{4}$/;
 const YES_NO_VALUES = new Set(['', 'yes', 'no']);
 const GENDER_VALUES = new Set(['', 'male', 'female']);
 const PARISH_STATUS_VALUES = new Set(['', 'active', 'inactive']);
@@ -30,6 +31,12 @@ const pushIfInvalidEmail = (errors, path, value) => {
 const pushIfInvalidDate = (errors, path, value) => {
   if (value !== '' && !isValidDate(value)) {
     errors.push({ path, message: 'Invalid date.' });
+  }
+};
+
+const pushIfInvalidPhone = (errors, path, value) => {
+  if (value !== '' && !PHONE_REGEX.test(value)) {
+    errors.push({ path, message: 'Invalid phone number. Include area code.' });
   }
 };
 
@@ -64,6 +71,8 @@ export const validateParishRegistration = (value) => {
 
   pushIfInvalidEmail(errors, 'family.familyEmail', value.family.familyEmail);
   pushIfInvalidDate(errors, 'family.registrationDate', value.family.registrationDate);
+  pushIfInvalidPhone(errors, 'family.homePhone', value.family.homePhone);
+  pushIfInvalidPhone(errors, 'family.emergencyPhone', value.family.emergencyPhone);
 
   if (!Array.isArray(value.adults) || value.adults.length !== 2) {
     errors.push({ path: 'adults', message: 'Exactly two adult members are required.' });
@@ -80,6 +89,7 @@ export const validateParishRegistration = (value) => {
     pushIfInvalidChoice(errors, `adults.${index}.parishStatus`, adult.parishStatus, PARISH_STATUS_VALUES);
     pushIfInvalidChoice(errors, `adults.${index}.isCatholic`, adult.isCatholic, YES_NO_VALUES);
     pushIfInvalidEmail(errors, `adults.${index}.email`, adult.email);
+    pushIfInvalidPhone(errors, `adults.${index}.workPhoneOrCell`, adult.workPhoneOrCell);
     pushIfInvalidDate(errors, `adults.${index}.dateOfBirth`, adult.dateOfBirth);
     validateSacraments(errors, `adults.${index}.sacraments`, adult.sacraments);
   });
