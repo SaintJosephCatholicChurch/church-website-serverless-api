@@ -166,17 +166,15 @@ export const generateParishRegistrationPdf = async (value) => {
     drawParagraph('Occupation', adult.occupation);
     drawParagraph('Employer', adult.employer);
     drawParagraph('Birthplace', adult.birthplace);
+    drawParagraph('Baptized?', formatChoice(adult.sacraments.baptism.received));
     drawParagraph('Catholic?', formatChoice(adult.isCatholic));
-    drawParagraph('Baptism', formatSacrament('Baptism', adult.sacraments.baptism).replace('Baptism: ', ''));
-    drawParagraph('Eucharist', formatSacrament('Eucharist', adult.sacraments.eucharist).replace('Eucharist: ', ''));
-    drawParagraph(
-      'Reconciliation',
-      formatSacrament('Reconciliation', adult.sacraments.reconciliation).replace('Reconciliation: ', ''),
-    );
-    drawParagraph(
-      'Confirmation',
-      formatSacrament('Confirmation', adult.sacraments.confirmation).replace('Confirmation: ', ''),
-    );
+    drawParagraph('Baptism Date', adult.sacraments.baptism.date);
+    drawParagraph('Reconciliation?', formatChoice(adult.sacraments.reconciliation.received));
+    drawParagraph('Reconciliation Date', adult.sacraments.reconciliation.date);
+    drawParagraph('First Eucharist?', formatChoice(adult.sacraments.eucharist.received));
+    drawParagraph('First Eucharist Date', adult.sacraments.eucharist.date);
+    drawParagraph('Confirmed?', formatChoice(adult.sacraments.confirmation.received));
+    drawParagraph('Confirmation Date', adult.sacraments.confirmation.date);
     drawParagraph('Marital Status', adult.maritalStatus);
     drawParagraph('Valid Catholic Marriage?', formatChoice(adult.validCatholicMarriage));
   });
@@ -192,21 +190,20 @@ export const generateParishRegistrationPdf = async (value) => {
     drawParagraph('Last Name', child.lastName);
     drawParagraph('Gender', child.gender);
     drawParagraph('Birthdate', child.birthdate);
+    drawParagraph('Birthplace', child.birthplace);
     drawParagraph('Relationship To Head Of Household', child.relationshipToHeadOfHousehold);
     drawParagraph('School', child.school);
     drawParagraph('H.S. Grad Yr', child.highSchoolGraduationYear);
     drawParagraph('First Language', child.firstLanguage);
+    drawParagraph('Baptized?', formatChoice(child.sacraments.baptism.received));
     drawParagraph('Catholic?', formatChoice(child.isCatholic));
-    drawParagraph('Baptism', formatSacrament('Baptism', child.sacraments.baptism).replace('Baptism: ', ''));
-    drawParagraph('Eucharist', formatSacrament('Eucharist', child.sacraments.eucharist).replace('Eucharist: ', ''));
-    drawParagraph(
-      'Reconciliation',
-      formatSacrament('Reconciliation', child.sacraments.reconciliation).replace('Reconciliation: ', ''),
-    );
-    drawParagraph(
-      'Confirmation',
-      formatSacrament('Confirmation', child.sacraments.confirmation).replace('Confirmation: ', ''),
-    );
+    drawParagraph('Baptism Date', child.sacraments.baptism.date);
+    drawParagraph('Reconciliation?', formatChoice(child.sacraments.reconciliation.received));
+    drawParagraph('Reconciliation Date', child.sacraments.reconciliation.date);
+    drawParagraph('First Eucharist?', formatChoice(child.sacraments.eucharist.received));
+    drawParagraph('First Eucharist Date', child.sacraments.eucharist.date);
+    drawParagraph('Confirmed?', formatChoice(child.sacraments.confirmation.received));
+    drawParagraph('Confirmation Date', child.sacraments.confirmation.date);
   });
 
   drawSectionTitle('Additional Information');

@@ -68,6 +68,7 @@ const sanitizeChild = (value = {}) => ({
   lastName: normalizeString(value.lastName),
   gender: normalizeChoice(value.gender),
   birthdate: normalizeDate(value.birthdate),
+  birthplace: normalizeString(value.birthplace),
   relationshipToHeadOfHousehold: normalizeString(value.relationshipToHeadOfHousehold),
   school: normalizeString(value.school),
   highSchoolGraduationYear: normalizeString(value.highSchoolGraduationYear),

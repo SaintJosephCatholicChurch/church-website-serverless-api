@@ -78,20 +78,15 @@ export const buildParishRegistrationSummaryHtml = (value) => {
         { label: 'Occupation', value: adult.occupation },
         { label: 'Employer', value: adult.employer },
         { label: 'Birthplace', value: adult.birthplace },
+        { label: 'Baptized?', value: formatBooleanChoice(adult.sacraments.baptism.received) },
         { label: 'Catholic?', value: formatBooleanChoice(adult.isCatholic) },
-        { label: 'Baptism', value: formatSacrament('Baptism', adult.sacraments.baptism).replace('Baptism: ', '') },
-        {
-          label: 'Eucharist',
-          value: formatSacrament('Eucharist', adult.sacraments.eucharist).replace('Eucharist: ', ''),
-        },
-        {
-          label: 'Reconciliation',
-          value: formatSacrament('Reconciliation', adult.sacraments.reconciliation).replace('Reconciliation: ', ''),
-        },
-        {
-          label: 'Confirmation',
-          value: formatSacrament('Confirmation', adult.sacraments.confirmation).replace('Confirmation: ', ''),
-        },
+        { label: 'Baptism Date', value: adult.sacraments.baptism.date },
+        { label: 'Reconciliation?', value: formatBooleanChoice(adult.sacraments.reconciliation.received) },
+        { label: 'Reconciliation Date', value: adult.sacraments.reconciliation.date },
+        { label: 'First Eucharist?', value: formatBooleanChoice(adult.sacraments.eucharist.received) },
+        { label: 'First Eucharist Date', value: adult.sacraments.eucharist.date },
+        { label: 'Confirmed?', value: formatBooleanChoice(adult.sacraments.confirmation.received) },
+        { label: 'Confirmation Date', value: adult.sacraments.confirmation.date },
         { label: 'Marital Status', value: adult.maritalStatus },
         { label: 'Valid Catholic Marriage?', value: formatBooleanChoice(adult.validCatholicMarriage) },
       ];
@@ -110,30 +105,20 @@ export const buildParishRegistrationSummaryHtml = (value) => {
               { label: 'Last Name', value: child.lastName },
               { label: 'Gender', value: child.gender },
               { label: 'Birthdate', value: child.birthdate },
+              { label: 'Birthplace', value: child.birthplace },
               { label: 'Relationship To Head Of Household', value: child.relationshipToHeadOfHousehold },
               { label: 'School', value: child.school },
               { label: 'H.S. Grad Yr', value: child.highSchoolGraduationYear },
               { label: 'First Language', value: child.firstLanguage },
+              { label: 'Baptized?', value: formatBooleanChoice(child.sacraments.baptism.received) },
               { label: 'Catholic?', value: formatBooleanChoice(child.isCatholic) },
-              {
-                label: 'Baptism',
-                value: formatSacrament('Baptism', child.sacraments.baptism).replace('Baptism: ', ''),
-              },
-              {
-                label: 'Eucharist',
-                value: formatSacrament('Eucharist', child.sacraments.eucharist).replace('Eucharist: ', ''),
-              },
-              {
-                label: 'Reconciliation',
-                value: formatSacrament('Reconciliation', child.sacraments.reconciliation).replace(
-                  'Reconciliation: ',
-                  '',
-                ),
-              },
-              {
-                label: 'Confirmation',
-                value: formatSacrament('Confirmation', child.sacraments.confirmation).replace('Confirmation: ', ''),
-              },
+              { label: 'Baptism Date', value: child.sacraments.baptism.date },
+              { label: 'Reconciliation?', value: formatBooleanChoice(child.sacraments.reconciliation.received) },
+              { label: 'Reconciliation Date', value: child.sacraments.reconciliation.date },
+              { label: 'First Eucharist?', value: formatBooleanChoice(child.sacraments.eucharist.received) },
+              { label: 'First Eucharist Date', value: child.sacraments.eucharist.date },
+              { label: 'Confirmed?', value: formatBooleanChoice(child.sacraments.confirmation.received) },
+              { label: 'Confirmation Date', value: child.sacraments.confirmation.date },
             ];
 
             return `<h3>Child / Dependent ${index + 1}</h3>${buildList(rows)}`;

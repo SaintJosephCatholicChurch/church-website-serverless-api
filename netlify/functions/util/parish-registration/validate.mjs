@@ -125,8 +125,24 @@ export const validateParishRegistration = (value) => {
     errors.push({ path: 'family.address', message: 'Address is required.' });
   }
 
+  if (value.family.city === '') {
+    errors.push({ path: 'family.city', message: 'City is required.' });
+  }
+
+  if (value.family.state === '') {
+    errors.push({ path: 'family.state', message: 'State is required.' });
+  }
+
   if (value.family.familyEmail === '') {
     errors.push({ path: 'family.familyEmail', message: 'Family email is required.' });
+  }
+
+  if (value.family.homePhone === '') {
+    errors.push({ path: 'family.homePhone', message: 'Home phone is required.' });
+  }
+
+  if (value.family.zip === '') {
+    errors.push({ path: 'family.zip', message: 'ZIP code is required.' });
   }
 
   pushIfInvalidEmail(errors, 'family.familyEmail', value.family.familyEmail);
@@ -145,6 +161,30 @@ export const validateParishRegistration = (value) => {
   }
 
   value.adults.forEach((adult, index) => {
+    if (adult.parishStatus === '') {
+      errors.push({ path: `adults.${index}.parishStatus`, message: 'Parish status is required.' });
+    }
+
+    if (adult.role === '') {
+      errors.push({ path: `adults.${index}.role`, message: 'Role is required.' });
+    }
+
+    if (adult.firstName === '') {
+      errors.push({ path: `adults.${index}.firstName`, message: 'First name is required.' });
+    }
+
+    if (adult.gender === '') {
+      errors.push({ path: `adults.${index}.gender`, message: 'Gender is required.' });
+    }
+
+    if (adult.dateOfBirth === '') {
+      errors.push({ path: `adults.${index}.dateOfBirth`, message: 'Date of birth is required.' });
+    }
+
+    if (adult.birthplace === '') {
+      errors.push({ path: `adults.${index}.birthplace`, message: 'Birthplace is required.' });
+    }
+
     pushIfInvalidChoice(errors, `adults.${index}.gender`, adult.gender, GENDER_VALUES);
     pushIfInvalidChoice(errors, `adults.${index}.maritalStatus`, adult.maritalStatus, MARITAL_STATUS_VALUES);
     pushIfInvalidChoice(errors, `adults.${index}.validCatholicMarriage`, adult.validCatholicMarriage, YES_NO_VALUES);
@@ -158,6 +198,33 @@ export const validateParishRegistration = (value) => {
   });
 
   value.children.forEach((child, index) => {
+    if (child.relationshipToHeadOfHousehold === '') {
+      errors.push({
+        path: `children.${index}.relationshipToHeadOfHousehold`,
+        message: 'Relationship to head of household is required.',
+      });
+    }
+
+    if (child.firstName === '') {
+      errors.push({ path: `children.${index}.firstName`, message: 'First name is required.' });
+    }
+
+    if (child.lastName === '') {
+      errors.push({ path: `children.${index}.lastName`, message: 'Last name is required.' });
+    }
+
+    if (child.gender === '') {
+      errors.push({ path: `children.${index}.gender`, message: 'Gender is required.' });
+    }
+
+    if (child.birthdate === '') {
+      errors.push({ path: `children.${index}.birthdate`, message: 'Birthdate is required.' });
+    }
+
+    if (child.birthplace === '') {
+      errors.push({ path: `children.${index}.birthplace`, message: 'Birthplace is required.' });
+    }
+
     pushIfInvalidChoice(errors, `children.${index}.gender`, child.gender, GENDER_VALUES);
     pushIfInvalidChoice(errors, `children.${index}.isCatholic`, child.isCatholic, YES_NO_VALUES);
     pushIfInvalidDate(errors, `children.${index}.birthdate`, child.birthdate);
