@@ -1,5 +1,9 @@
 import nodemailer from 'nodemailer';
-import { buildAttachmentFileName, buildParishRegistrationSummaryHtml } from './summary.mjs';
+import {
+  buildAttachmentFileName,
+  buildParishRegistrationSummaryHtml,
+  buildParishRegistrationSummaryText,
+} from './summary.mjs';
 
 const getEnv = (key) => {
   if (globalThis.Netlify?.env?.get) {
@@ -38,6 +42,7 @@ export const sendParishRegistrationEmail = async (value, pdfBytes) => {
     replyTo: value.family.familyEmail || undefined,
     subject: 'New Parish Registration Submission',
     html: buildParishRegistrationSummaryHtml(value),
+    text: buildParishRegistrationSummaryText(value),
     attachments: [
       {
         filename: buildAttachmentFileName(value),
