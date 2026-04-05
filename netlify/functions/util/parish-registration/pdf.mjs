@@ -175,9 +175,11 @@ export const generateParishRegistrationPdf = async (value) => {
     drawParagraph('First Eucharist Date', adult.sacraments.eucharist.date);
     drawParagraph('Confirmed?', formatChoice(adult.sacraments.confirmation.received));
     drawParagraph('Confirmation Date', adult.sacraments.confirmation.date);
-    drawParagraph('Marital Status', adult.maritalStatus);
-    drawParagraph('Valid Catholic Marriage?', formatChoice(adult.validCatholicMarriage));
   });
+
+  drawSectionTitle('Marriage Information');
+  drawParagraph('Marital Status', value.marriage?.maritalStatus ?? '');
+  drawParagraph('Valid Catholic Marriage?', formatChoice(value.marriage?.validCatholicMarriage ?? ''));
 
   drawSectionTitle('Children / Dependents');
   if (value.children.length === 0) {

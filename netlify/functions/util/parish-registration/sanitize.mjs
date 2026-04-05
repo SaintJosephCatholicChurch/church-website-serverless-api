@@ -58,8 +58,6 @@ const sanitizeAdult = (value = {}) => ({
   employer: normalizeString(value.employer),
   birthplace: normalizeString(value.birthplace),
   isCatholic: normalizeChoice(value.isCatholic),
-  maritalStatus: normalizeChoice(value.maritalStatus),
-  validCatholicMarriage: normalizeChoice(value.validCatholicMarriage),
   sacraments: sanitizeSacraments(value.sacraments),
 });
 
@@ -94,6 +92,12 @@ export const sanitizeParishRegistration = (value = {}) => ({
     familyEmail: normalizeString(value?.family?.familyEmail),
   },
   adults: Array.isArray(value?.adults) ? value.adults.map(sanitizeAdult) : [],
+  marriage: {
+    maritalStatus: normalizeChoice(value?.marriage?.maritalStatus ?? value?.adults?.[0]?.maritalStatus),
+    validCatholicMarriage: normalizeChoice(
+      value?.marriage?.validCatholicMarriage ?? value?.adults?.[0]?.validCatholicMarriage,
+    ),
+  },
   children: Array.isArray(value?.children) ? value.children.map(sanitizeChild) : [],
   additional: {
     priestVisitRequested: normalizeChoice(value?.additional?.priestVisitRequested),

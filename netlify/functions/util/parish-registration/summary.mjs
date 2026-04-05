@@ -87,8 +87,6 @@ export const buildParishRegistrationSummaryHtml = (value) => {
         { label: 'First Eucharist Date', value: adult.sacraments.eucharist.date },
         { label: 'Confirmed?', value: formatBooleanChoice(adult.sacraments.confirmation.received) },
         { label: 'Confirmation Date', value: adult.sacraments.confirmation.date },
-        { label: 'Marital Status', value: adult.maritalStatus },
-        { label: 'Valid Catholic Marriage?', value: formatBooleanChoice(adult.validCatholicMarriage) },
       ];
 
       return `<h3>Adult Member ${index + 1}</h3>${buildList(rows)}`;
@@ -126,6 +124,8 @@ export const buildParishRegistrationSummaryHtml = (value) => {
           .join('');
 
   const additionalRows = [
+    { label: 'Marital Status', value: value.marriage?.maritalStatus ?? '' },
+    { label: 'Valid Catholic Marriage?', value: formatBooleanChoice(value.marriage?.validCatholicMarriage) },
     {
       label: 'Would any household member like to be visited by a priest?',
       value: formatBooleanChoice(value.additional.priestVisitRequested),

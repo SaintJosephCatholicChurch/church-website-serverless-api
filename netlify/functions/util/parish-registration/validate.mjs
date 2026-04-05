@@ -186,8 +186,6 @@ export const validateParishRegistration = (value) => {
     }
 
     pushIfInvalidChoice(errors, `adults.${index}.gender`, adult.gender, GENDER_VALUES);
-    pushIfInvalidChoice(errors, `adults.${index}.maritalStatus`, adult.maritalStatus, MARITAL_STATUS_VALUES);
-    pushIfInvalidChoice(errors, `adults.${index}.validCatholicMarriage`, adult.validCatholicMarriage, YES_NO_VALUES);
     pushIfInvalidChoice(errors, `adults.${index}.parishStatus`, adult.parishStatus, PARISH_STATUS_VALUES);
     pushIfInvalidChoice(errors, `adults.${index}.isCatholic`, adult.isCatholic, YES_NO_VALUES);
     pushIfInvalidEmail(errors, `adults.${index}.email`, adult.email);
@@ -230,6 +228,14 @@ export const validateParishRegistration = (value) => {
     pushIfInvalidDate(errors, `children.${index}.birthdate`, child.birthdate);
     validateSacraments(errors, `children.${index}.sacraments`, child.sacraments);
   });
+
+  pushIfInvalidChoice(errors, 'marriage.maritalStatus', value.marriage?.maritalStatus ?? '', MARITAL_STATUS_VALUES);
+  pushIfInvalidChoice(
+    errors,
+    'marriage.validCatholicMarriage',
+    value.marriage?.validCatholicMarriage ?? '',
+    YES_NO_VALUES,
+  );
 
   pushIfInvalidChoice(errors, 'additional.priestVisitRequested', value.additional.priestVisitRequested, YES_NO_VALUES);
 
