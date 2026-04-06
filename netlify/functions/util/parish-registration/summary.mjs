@@ -48,14 +48,14 @@ const FIELD_FILL = '#f3f3f3';
 const SECTION_UNDERLINE = 'rgba(191,48,60,0.18)';
 
 const buildFieldCard = (label, value, width = '50%') => `
-  <td style="width:${width}; vertical-align:top; padding:0 4px 8px 4px;">
+  <td style="width:${width}; vertical-align:top; padding:0 3px 6px 3px;">
     <table role="presentation" style="width:100%; border-collapse:collapse; table-layout:fixed;">
       <tr>
-        <td style="padding:3px 6px; font-family:Arial, Helvetica, sans-serif;">
-          <div style="font-size:9px; font-weight:700; letter-spacing:0.05em; text-transform:uppercase; color:${MUTED_COLOR}; padding:0 0 1px 0;">
+        <td style="padding:2px 5px; font-family:Arial, Helvetica, sans-serif;">
+          <div style="font-size:9px; font-weight:700; letter-spacing:0.05em; text-transform:uppercase; color:${MUTED_COLOR}; padding:0;">
             ${escapeHtml(label)}
           </div>
-          <div style="padding:1px 6px 2px 6px; font-size:13px; line-height:1.35; color:${TEXT_COLOR}; white-space:pre-line; overflow-wrap:anywhere; background:${FIELD_FILL};">
+          <div style="padding:1px; font-size:13px; line-height:1.3; color:${TEXT_COLOR}; white-space:pre-line; overflow-wrap:anywhere; background:${FIELD_FILL};">
             ${escapeHtml(formatValue(value))}
           </div>
         </td>
@@ -97,6 +97,39 @@ const buildFieldGrid = (rows) => {
           const cells = row.map((field) => buildFieldCard(field.label, field.value, field.width)).join('');
           const filler =
             row.length === 1 && row[0].width === '50%' ? '<td style="width:50%; padding:0 4px 8px 4px;"></td>' : '';
+          return `<tr>${cells}${filler}</tr>`;
+        })
+        .join('')}
+    </table>
+  `;
+};
+
+const buildQuarterFieldGrid = (rows) => {
+  const layoutRows = [];
+  let currentRow = [];
+
+  for (const field of rows) {
+    currentRow.push(field);
+
+    if (currentRow.length === 4) {
+      layoutRows.push(currentRow);
+      currentRow = [];
+    }
+  }
+
+  if (currentRow.length > 0) {
+    layoutRows.push(currentRow);
+  }
+
+  return `
+    <table role="presentation" style="width:100%; border-collapse:collapse; table-layout:fixed;">
+      ${layoutRows
+        .map((row) => {
+          const cells = row.map((field) => buildFieldCard(field.label, field.value, '25%')).join('');
+          const filler = Array.from(
+            { length: 4 - row.length },
+            () => '<td style="width:25%; padding:0 3px 6px 3px;"></td>',
+          ).join('');
           return `<tr>${cells}${filler}</tr>`;
         })
         .join('')}
@@ -227,7 +260,7 @@ const buildMarriageRow = (value) =>
           ${buildFieldGrid([{ label: 'Marital Status', value: formatTitleCase(value.marriage?.maritalStatus ?? ''), wide: true }])}
         </td>
         <td style="vertical-align:middle; padding:0 4px 8px 12px;">
-          <div style="padding:8px 0 0 0;">${buildCheckboxHtml('Valid Catholic Marriage?', isYes(value.marriage?.validCatholicMarriage))}</div>
+          <div style="padding:4px 0 0 0;">${buildCheckboxHtml('Valid Catholic Marriage?', isYes(value.marriage?.validCatholicMarriage))}</div>
         </td>
       </tr>
     </table>
@@ -260,8 +293,8 @@ const buildChildrenSection = (value) => {
       .map(
         (child, index) => `
           ${buildMemberLabel(`Child ${index + 1}`, index > 0)}
-          ${buildFieldGrid([
-            { label: 'Relationship to Head of Household', value: child.relationshipToHeadOfHousehold, wide: true },
+          ${buildQuarterFieldGrid([
+            { label: 'Relationship to Head of Household', value: child.relationshipToHeadOfHousehold },
             { label: 'First Name', value: child.firstName },
             { label: 'Last Name', value: child.lastName },
             { label: 'Gender', value: child.gender },
