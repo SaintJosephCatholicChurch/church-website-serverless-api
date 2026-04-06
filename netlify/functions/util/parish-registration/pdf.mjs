@@ -597,15 +597,20 @@ export const generateParishRegistrationPdf = async (value) => {
     };
 
     const totalH = Math.max(...adults.map(measureAdultCol));
-    ensureSpace(META_SIZE + 4 + totalH);
-
-    adults.forEach((adult, i) => {
-      const colX = MARGIN + i * (colWidth + COL_GAP);
-      drawMemberLabel(`Adult ${i + 1}`, colX, cursorY - MEMBER_LABEL_GAP);
-    });
-    cursorY -= MEMBER_LABEL_GAP + META_SIZE + 2;
+    ensureSpace(totalH);
 
     const colStartY = cursorY;
+
+    if (adults.length > 1) {
+      const dividerX = MARGIN + colWidth + COL_GAP / 2;
+      page.drawLine({
+        start: { x: dividerX, y: colStartY - 1 },
+        end: { x: dividerX, y: colStartY - totalH + 1 },
+        thickness: 0.6,
+        color: BRAND_RED,
+        opacity: 0.18,
+      });
+    }
 
     adults.forEach((adult, colIndex) => {
       const colX = MARGIN + colIndex * (colWidth + COL_GAP);
