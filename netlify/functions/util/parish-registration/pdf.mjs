@@ -55,6 +55,17 @@ const formatValue = (value) => {
   return s === '' ? '\u2014' : s;
 };
 
+const formatDisplayDate = (value) => {
+  const normalized = String(value ?? '').trim();
+
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(normalized)) {
+    return formatValue(value);
+  }
+
+  const [year, month, day] = normalized.split('-');
+  return `${month}/${day}/${year}`;
+};
+
 const wrapText = (text, font, size, maxWidth) => {
   const normalized = formatValue(text);
   const paragraphs = normalized.split(/\r?\n/);
@@ -111,7 +122,7 @@ const buildAdultFields = (adult) => [
   { label: 'Nickname', value: adult.nickname },
   { label: 'Maiden Name', value: adult.maidenName },
   { label: 'Gender', value: adult.gender },
-  { label: 'Date of Birth', value: adult.dateOfBirth },
+  { label: 'Date of Birth', value: formatDisplayDate(adult.dateOfBirth) },
   { label: 'Birthplace', value: adult.birthplace },
   { label: 'First Language', value: adult.firstLanguage },
   { label: 'Occupation', value: adult.occupation },
@@ -122,12 +133,15 @@ const buildAdultFields = (adult) => [
 ];
 
 const buildAdultSacraments = (adult) => ({
-  baptism: adult.sacraments.baptism,
+  baptism: { ...adult.sacraments.baptism, date: formatDisplayDate(adult.sacraments.baptism.date) },
   isCatholic: adult.isCatholic,
   sacramentList: [
-    { name: 'Reconciliation', data: adult.sacraments.reconciliation },
-    { name: 'First Eucharist', data: adult.sacraments.eucharist },
-    { name: 'Confirmation', data: adult.sacraments.confirmation },
+    {
+      name: 'Reconciliation',
+      data: { ...adult.sacraments.reconciliation, date: formatDisplayDate(adult.sacraments.reconciliation.date) },
+    },
+    { name: 'First Eucharist', data: { ...adult.sacraments.eucharist, date: formatDisplayDate(adult.sacraments.eucharist.date) } },
+    { name: 'Confirmation', data: { ...adult.sacraments.confirmation, date: formatDisplayDate(adult.sacraments.confirmation.date) } },
   ],
 });
 
@@ -136,7 +150,7 @@ const buildChildFields = (child) => [
   { label: 'First Name', value: child.firstName },
   { label: 'Last Name', value: child.lastName },
   { label: 'Gender', value: child.gender },
-  { label: 'Birthdate', value: child.birthdate },
+  { label: 'Birthdate', value: formatDisplayDate(child.birthdate) },
   { label: 'Birthplace', value: child.birthplace },
   { label: 'School', value: child.school },
   { label: 'H.S. Grad Yr', value: child.highSchoolGraduationYear },
@@ -144,12 +158,15 @@ const buildChildFields = (child) => [
 ];
 
 const buildChildSacraments = (child) => ({
-  baptism: child.sacraments.baptism,
+  baptism: { ...child.sacraments.baptism, date: formatDisplayDate(child.sacraments.baptism.date) },
   isCatholic: child.isCatholic,
   sacramentList: [
-    { name: 'Reconciliation', data: child.sacraments.reconciliation },
-    { name: 'First Eucharist', data: child.sacraments.eucharist },
-    { name: 'Confirmation', data: child.sacraments.confirmation },
+    {
+      name: 'Reconciliation',
+      data: { ...child.sacraments.reconciliation, date: formatDisplayDate(child.sacraments.reconciliation.date) },
+    },
+    { name: 'First Eucharist', data: { ...child.sacraments.eucharist, date: formatDisplayDate(child.sacraments.eucharist.date) } },
+    { name: 'Confirmation', data: { ...child.sacraments.confirmation, date: formatDisplayDate(child.sacraments.confirmation.date) } },
   ],
 });
 
@@ -297,7 +314,7 @@ export const generateParishRegistrationPdf = async (value) => {
       font: regularFont,
       color: MUTED,
     });
-    const dateText = `Submitted: ${formatValue(value.family.registrationDate)}`;
+    const dateText = `Submitted: ${formatDisplayDate(value.family.registrationDate)}`;
     const dateW = regularFont.widthOfTextAtSize(dateText, META_SIZE);
     page.drawText(dateText, {
       x: pageWidth - MARGIN - dateW,

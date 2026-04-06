@@ -25,6 +25,17 @@ const formatValue = (value) => {
   return normalized === '' ? '—' : normalized;
 };
 
+const formatDisplayDate = (value) => {
+  const normalized = String(value ?? '').trim();
+
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(normalized)) {
+    return formatValue(value);
+  }
+
+  const [year, month, day] = normalized.split('-');
+  return `${month}/${day}/${year}`;
+};
+
 const formatAdultNames = (adults) => {
   const names = adults
     .map((adult) =>
@@ -36,6 +47,16 @@ const formatAdultNames = (adults) => {
   return names.length > 0 ? names.join(', ') : '—';
 };
 
+const formatHouseholdName = (value) => {
+  const mailingName = String(value?.family?.mailingName ?? '').trim();
+
+  if (mailingName !== '') {
+    return mailingName;
+  }
+
+  return formatValue(value?.family?.lastName);
+};
+
 export const buildAttachmentFileName = (value) => {
   const lastName =
     value.family.lastName !== '' ? value.family.lastName.toLowerCase().replace(/[^a-z0-9]+/g, '-') : 'family';
@@ -45,13 +66,14 @@ export const buildAttachmentFileName = (value) => {
 };
 
 export const buildParishRegistrationSummaryText = (value) => {
+  const householdLine = formatHouseholdName(value);
   const lines = [
     'Someone registered at St. Joseph Catholic Church.',
     '',
-    `Household: ${formatValue(value.family.firstNames)} ${formatValue(value.family.lastName)}`,
+    `Household: ${householdLine}`,
     `Adults: ${value.adults.length} (${formatAdultNames(value.adults)})`,
     `Children / Dependents: ${value.children.length}`,
-    `Submitted: ${formatValue(value.family.registrationDate)}`,
+    `Submitted: ${formatDisplayDate(value.family.registrationDate)}`,
     `Family Email: ${formatValue(value.family.familyEmail)}`,
     '',
     'The completed registration form is attached.',
@@ -61,7 +83,7 @@ export const buildParishRegistrationSummaryText = (value) => {
 };
 
 export const buildParishRegistrationSummaryHtml = (value) => {
-  const householdLine = `${formatValue(value.family.firstNames)} ${formatValue(value.family.lastName)}`;
+  const householdLine = formatHouseholdName(value);
   const adultNames = formatAdultNames(value.adults);
 
   return `
@@ -106,7 +128,7 @@ export const buildParishRegistrationSummaryHtml = (value) => {
                   Submitted
                 </td>
                 <td style="padding:0 0 10px 0; font-size:14px; line-height:1.4; color:#202020;">
-                  ${escapeHtml(formatValue(value.family.registrationDate))}
+                  ${escapeHtml(formatDisplayDate(value.family.registrationDate))}
                 </td>
               </tr>
               <tr>
