@@ -18,6 +18,7 @@ const SECTION_TOP_GAP = 10;
 const MEMBER_LABEL_GAP = 3;
 const MEMBER_SECTION_TOP_GAP = 8;
 const CHILD_LABEL_TOP_GAP = 6;
+const CHILD_LABEL_TOP_GAP_AFTER_FIRST = 10;
 
 // Brand colors
 const BRAND_RED = rgb(0.749, 0.188, 0.235);
@@ -654,7 +655,7 @@ export const generateParishRegistrationPdf = async (value) => {
     value.children.forEach((child, index) => {
       ensureSpace(measureChild(child));
 
-      cursorY -= CHILD_LABEL_TOP_GAP;
+      cursorY -= index === 0 ? CHILD_LABEL_TOP_GAP : CHILD_LABEL_TOP_GAP_AFTER_FIRST;
       drawMemberLabel(`Dependent / Child ${index + 1}`, MARGIN, cursorY - MEMBER_LABEL_GAP);
       cursorY -= MEMBER_LABEL_GAP + META_SIZE + 2;
 
