@@ -426,13 +426,16 @@ export const generateParishRegistrationPdf = async (value) => {
 
     adults.forEach((adult, i) => {
       const colX = MARGIN + i * (colWidth + COL_GAP);
-      page.drawText(`ADULT ${i + 1} \u2014 ${formatValue(adult.firstName)} ${formatValue(adult.lastName)}`.toUpperCase(), {
-        x: colX,
-        y: cursorY,
-        size: META_SIZE,
-        font: boldFont,
-        color: MUTED,
-      });
+      page.drawText(
+        `ADULT ${i + 1} \u2014 ${formatValue(adult.firstName)} ${formatValue(adult.lastName)}`.toUpperCase(),
+        {
+          x: colX,
+          y: cursorY,
+          size: META_SIZE,
+          font: boldFont,
+          color: MUTED,
+        },
+      );
     });
     cursorY -= META_SIZE + 4;
 
@@ -483,10 +486,13 @@ export const generateParishRegistrationPdf = async (value) => {
 
     if (numChildCols === 1) {
       const child = value.children[0];
-      page.drawText(
-        `CHILD 1 \u2014 ${formatValue(child.firstName)} ${formatValue(child.lastName)}`.toUpperCase(),
-        { x: MARGIN, y: cursorY, size: META_SIZE, font: boldFont, color: MUTED },
-      );
+      page.drawText(`CHILD 1 \u2014 ${formatValue(child.firstName)} ${formatValue(child.lastName)}`.toUpperCase(), {
+        x: MARGIN,
+        y: cursorY,
+        size: META_SIZE,
+        font: boldFont,
+        color: MUTED,
+      });
       cursorY -= META_SIZE + 4;
 
       drawFieldGrid(buildChildFields(child), MARGIN, CONTENT_WIDTH, 3);
