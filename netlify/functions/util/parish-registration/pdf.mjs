@@ -15,7 +15,7 @@ const COLUMN_GAP = 4;
 const FIELD_ROW_GAP = 5;
 const SECTION_GAP = 5;
 const SECTION_TOP_GAP = 10;
-const MEMBER_LABEL_GAP = 5;
+const MEMBER_LABEL_GAP = 3;
 const MEMBER_SECTION_TOP_GAP = 8;
 
 // Brand colors
@@ -28,12 +28,6 @@ const FIELD_FILL = rgb(0.955, 0.955, 0.955);
 const DIVIDER = rgb(0.88, 0.88, 0.88);
 const WHITE = rgb(1, 1, 1);
 const CHECK_GREEN = rgb(0.18, 0.62, 0.28);
-
-const formatChoice = (value) => {
-  if (value === true || value === 'yes') return 'Yes';
-  if (value === false || value === 'no') return 'No';
-  return '';
-};
 
 const formatTitleCase = (value) => {
   const normalized = String(value ?? '').trim();
@@ -623,7 +617,7 @@ export const generateParishRegistrationPdf = async (value) => {
         colY -= rowH + FIELD_ROW_GAP;
       }
 
-      colY -= SECTION_GAP;
+      colY -= SECTION_GAP + 2;
       page.drawText('SACRAMENTS', { x: colX, y: colY, size: META_SIZE, font: boldFont, color: BRAND_DARK });
       colY -= META_SIZE + 2;
 
