@@ -104,17 +104,20 @@ const buildFamilyAndMarriageFields = (value) => [
   { label: 'Emergency Phone', value: value.family.emergencyPhone },
   { label: 'Family Email', value: value.family.familyEmail },
   { label: 'Env#', value: value.family.envelopeNumber },
+];
+
+const buildMarriageFields = (value) => [
   { label: 'Marital Status', value: formatTitleCase(value.marriage?.maritalStatus ?? '') },
   { label: 'Catholic Marriage?', value: formatChoice(value.marriage?.validCatholicMarriage ?? '') },
 ];
 
 const buildAdultFields = (adult) => [
+  { label: 'Parish Status', value: formatTitleCase(adult.parishStatus) },
+  { label: 'Role', value: adult.role },
   { label: 'First Name', value: adult.firstName },
   { label: 'Nickname', value: adult.nickname },
   { label: 'Maiden Name', value: adult.maidenName },
   { label: 'Gender', value: adult.gender },
-  { label: 'Role', value: adult.role },
-  { label: 'Parish Status', value: adult.parishStatus },
   { label: 'Date of Birth', value: adult.dateOfBirth },
   { label: 'Birthplace', value: adult.birthplace },
   { label: 'First Language', value: adult.firstLanguage },
@@ -607,9 +610,11 @@ export const generateParishRegistrationPdf = async (value) => {
 
   drawSectionTitle('Family Information');
   drawFieldGrid(buildFamilyAndMarriageFields(value), MARGIN, CONTENT_WIDTH, 3);
-  drawPriestVisitRow();
 
   drawAdultColumns(value.adults);
+  cursorY -= SECTION_GAP;
+  drawFieldGrid(buildMarriageFields(value), MARGIN, CONTENT_WIDTH, 2);
+  drawPriestVisitRow();
 
   if (value.children.length > 0) {
     cursorY -= MEMBER_SECTION_TOP_GAP;

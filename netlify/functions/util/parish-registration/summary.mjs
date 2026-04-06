@@ -49,13 +49,13 @@ const SECTION_UNDERLINE = 'rgba(191,48,60,0.18)';
 
 const buildFieldCard = (label, value, width = '50%') => `
   <td style="width:${width}; vertical-align:top; padding:0 4px 8px 4px;">
-    <table role="presentation" style="width:100%; border-collapse:collapse;">
+    <table role="presentation" style="width:100%; border-collapse:collapse; table-layout:fixed;">
       <tr>
-        <td style="padding:6px 10px; font-family:Arial, Helvetica, sans-serif;">
-          <div style="font-size:9px; font-weight:700; letter-spacing:0.05em; text-transform:uppercase; color:${MUTED_COLOR}; padding:0 0 3px 0;">
+        <td style="padding:4px 8px; font-family:Arial, Helvetica, sans-serif;">
+          <div style="font-size:9px; font-weight:700; letter-spacing:0.05em; text-transform:uppercase; color:${MUTED_COLOR}; padding:0 0 2px 0;">
             ${escapeHtml(label)}
           </div>
-          <div style="padding:6px 8px; font-size:13px; line-height:1.4; color:${TEXT_COLOR}; white-space:pre-line; background:${FIELD_FILL};">
+          <div style="padding:3px 7px 4px 7px; font-size:13px; line-height:1.4; color:${TEXT_COLOR}; white-space:pre-line; overflow-wrap:anywhere; background:${FIELD_FILL};">
             ${escapeHtml(formatValue(value))}
           </div>
         </td>
@@ -91,7 +91,7 @@ const buildFieldGrid = (rows) => {
   }
 
   return `
-    <table role="presentation" style="width:100%; border-collapse:collapse;">
+    <table role="presentation" style="width:100%; border-collapse:collapse; table-layout:fixed;">
       ${layoutRows
         .map((row) => {
           const cells = row.map((field) => buildFieldCard(field.label, field.value, field.width)).join('');
@@ -170,36 +170,20 @@ const buildSection = (title, content) => `
 const buildFamilySection = (value) =>
   buildSection(
     'Family Information',
-    [
-      buildFieldGrid([
-        { label: 'Family Last Name', value: value.family.lastName },
-        { label: 'First Name(s)', value: value.family.firstNames },
-        { label: 'Mailing Name', value: value.family.mailingName, wide: true },
-        { label: 'Address', value: value.family.address, wide: true },
-        { label: 'Address Line 2', value: value.family.addressLine2, wide: true },
-        { label: 'City', value: value.family.city },
-        { label: 'State', value: value.family.state },
-        { label: 'Zip', value: value.family.zip },
-        { label: 'Home Phone', value: value.family.homePhone },
-        { label: 'Emergency Phone', value: value.family.emergencyPhone },
-        { label: 'Family Email', value: value.family.familyEmail },
-        { label: 'Env#', value: value.family.envelopeNumber },
-        { label: 'Marital Status', value: formatTitleCase(value.marriage?.maritalStatus ?? '') },
-        { label: 'Catholic Marriage?', value: formatBooleanChoice(value.marriage?.validCatholicMarriage) },
-      ]),
-      `
-        <table role="presentation" style="width:100%; border-collapse:collapse; margin-top:2px;">
-          <tr>
-            <td style="width:130px; vertical-align:middle; padding:0 4px 8px 4px;">
-              <div style="padding:10px 0 0 6px;">${buildCheckboxHtml('Priest Visit?', isYes(value.additional.priestVisitRequested))}</div>
-            </td>
-            <td style="vertical-align:top; padding:0 4px 8px 4px;">
-              ${buildFieldGrid([{ label: 'Priest Visit Details', value: value.additional.priestVisitDetails, wide: true }])}
-            </td>
-          </tr>
-        </table>
-      `,
-    ].join(''),
+    buildFieldGrid([
+      { label: 'Family Last Name', value: value.family.lastName },
+      { label: 'First Name(s)', value: value.family.firstNames },
+      { label: 'Mailing Name', value: value.family.mailingName, wide: true },
+      { label: 'Address', value: value.family.address, wide: true },
+      { label: 'Address Line 2', value: value.family.addressLine2, wide: true },
+      { label: 'City', value: value.family.city },
+      { label: 'State', value: value.family.state },
+      { label: 'Zip', value: value.family.zip },
+      { label: 'Home Phone', value: value.family.homePhone },
+      { label: 'Emergency Phone', value: value.family.emergencyPhone },
+      { label: 'Family Email', value: value.family.familyEmail },
+      { label: 'Env#', value: value.family.envelopeNumber },
+    ]),
   );
 
 const buildAdultsSection = (value) =>
@@ -210,12 +194,12 @@ const buildAdultsSection = (value) =>
         (adult, index) => `
           ${buildMemberLabel(`Adult ${index + 1}`, index > 0)}
           ${buildFieldGrid([
+            { label: 'Parish Status', value: formatTitleCase(adult.parishStatus) },
+            { label: 'Role', value: adult.role },
             { label: 'First Name', value: adult.firstName },
             { label: 'Nickname', value: adult.nickname },
             { label: 'Maiden Name', value: adult.maidenName },
             { label: 'Gender', value: adult.gender },
-            { label: 'Role', value: adult.role },
-            { label: 'Parish Status', value: adult.parishStatus },
             { label: 'Date of Birth', value: adult.dateOfBirth },
             { label: 'Birthplace', value: adult.birthplace },
             { label: 'First Language', value: adult.firstLanguage },
@@ -234,6 +218,25 @@ const buildAdultsSection = (value) =>
       )
       .join(''),
   );
+
+const buildMarriageRow = (value) =>
+  buildFieldGrid([
+    { label: 'Marital Status', value: formatTitleCase(value.marriage?.maritalStatus ?? '') },
+    { label: 'Catholic Marriage?', value: formatBooleanChoice(value.marriage?.validCatholicMarriage) },
+  ]);
+
+const buildPriestVisitRow = (value) => `
+  <table role="presentation" style="width:100%; border-collapse:collapse; margin-top:2px;">
+    <tr>
+      <td style="width:130px; vertical-align:middle; padding:0 4px 8px 4px;">
+        <div style="padding:10px 0 0 6px;">${buildCheckboxHtml('Priest Visit?', isYes(value.additional.priestVisitRequested))}</div>
+      </td>
+      <td style="vertical-align:top; padding:0 4px 8px 4px;">
+        ${buildFieldGrid([{ label: 'Priest Visit Details', value: value.additional.priestVisitDetails, wide: true }])}
+      </td>
+    </tr>
+  </table>
+`;
 
 const buildChildrenSection = (value) => {
   if (value.children.length === 0) {
@@ -309,6 +312,8 @@ export const buildParishRegistrationSummaryHtml = (value) => `
 
         ${buildFamilySection(value)}
         ${buildAdultsSection(value)}
+        ${buildMarriageRow(value)}
+        ${buildPriestVisitRow(value)}
         ${buildChildrenSection(value)}
       </div>
     </div>
