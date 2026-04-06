@@ -15,7 +15,7 @@ const COLUMN_GAP = 4;
 const FIELD_ROW_GAP = 5;
 const SECTION_GAP = 5;
 const SECTION_TOP_GAP = 10;
-const MEMBER_LABEL_GAP = 7;
+const MEMBER_LABEL_GAP = 5;
 const MEMBER_SECTION_TOP_GAP = 8;
 
 // Brand colors
@@ -24,7 +24,7 @@ const BRAND_DARK = rgb(0.51, 0.129, 0.161);
 const BLACK = rgb(0.08, 0.08, 0.08);
 const TEXT = rgb(0.18, 0.18, 0.18);
 const MUTED = rgb(0.42, 0.42, 0.42);
-const FIELD_FILL = rgb(0.985, 0.985, 0.985);
+const FIELD_FILL = rgb(0.955, 0.955, 0.955);
 const DIVIDER = rgb(0.88, 0.88, 0.88);
 const WHITE = rgb(1, 1, 1);
 const CHECK_GREEN = rgb(0.18, 0.62, 0.28);
@@ -33,6 +33,20 @@ const formatChoice = (value) => {
   if (value === true || value === 'yes') return 'Yes';
   if (value === false || value === 'no') return 'No';
   return '';
+};
+
+const formatTitleCase = (value) => {
+  const normalized = String(value ?? '').trim();
+
+  if (normalized === '') {
+    return '';
+  }
+
+  return normalized
+    .split(/[-_\s]+/)
+    .filter(Boolean)
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1).toLowerCase())
+    .join(' ');
 };
 
 const isYes = (value) => value === true || value === 'yes';
@@ -90,7 +104,7 @@ const buildFamilyAndMarriageFields = (value) => [
   { label: 'Emergency Phone', value: value.family.emergencyPhone },
   { label: 'Family Email', value: value.family.familyEmail },
   { label: 'Env#', value: value.family.envelopeNumber },
-  { label: 'Marital Status', value: value.marriage?.maritalStatus ?? '' },
+  { label: 'Marital Status', value: formatTitleCase(value.marriage?.maritalStatus ?? '') },
   { label: 'Catholic Marriage?', value: formatChoice(value.marriage?.validCatholicMarriage ?? '') },
 ];
 
