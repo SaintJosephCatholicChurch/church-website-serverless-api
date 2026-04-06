@@ -22,6 +22,7 @@ const BLACK = rgb(0.08, 0.08, 0.08);
 const TEXT = rgb(0.18, 0.18, 0.18);
 const MUTED = rgb(0.42, 0.42, 0.42);
 const FIELD_BORDER = rgb(0.82, 0.82, 0.82);
+const FORM_LINE = rgb(0.76, 0.76, 0.76);
 const DIVIDER = rgb(0.88, 0.88, 0.88);
 const WHITE = rgb(1, 1, 1);
 const CHECK_GREEN = rgb(0.18, 0.62, 0.28);
@@ -171,7 +172,7 @@ const measureLayoutRows = (fields, innerWidth, numCols = 2) => {
 
 const measureFieldCardHeight = (rawValue, width, font) => {
   const valueLines = wrapText(rawValue, font, VALUE_SIZE, width - CELL_PADDING_X * 2);
-  return CELL_PADDING_Y * 2 + LABEL_SIZE + 3 + valueLines.length * LINE_GAP;
+  return CELL_PADDING_Y + LABEL_SIZE + 2 + valueLines.length * LINE_GAP + 2;
 };
 
 const measureFieldGridHeight = (fields, gridWidth, regularFont, numCols = 2) => {
@@ -293,48 +294,47 @@ export const generateParishRegistrationPdf = async (value) => {
 
   const drawSectionTitle = (title) => {
     ensureSpace(SECTION_SIZE + 16);
-    cursorY -= 6;
+    cursorY -= 5;
     page.drawText(title.toUpperCase(), { x: MARGIN, y: cursorY, size: SECTION_SIZE, font: boldFont, color: BRAND_RED });
-    cursorY -= SECTION_SIZE + 2;
+    cursorY -= SECTION_SIZE + 1;
     page.drawLine({
       start: { x: MARGIN, y: cursorY },
       end: { x: pageWidth - MARGIN, y: cursorY },
-      thickness: 0.8,
+      thickness: 0.6,
       color: BRAND_RED,
-      opacity: 0.3,
+      opacity: 0.18,
     });
-    cursorY -= 5;
+    cursorY -= 4;
   };
 
-  // Draw a single field card at an exact position. Returns height used.
+  // Draw a single form field at an exact position. Returns height used.
   const drawFieldCardOn = (pageTarget, x, y, width, label, rawValue) => {
     const valueLines = wrapText(rawValue, regularFont, VALUE_SIZE, width - CELL_PADDING_X * 2);
-    const height = CELL_PADDING_Y * 2 + LABEL_SIZE + 3 + valueLines.length * LINE_GAP;
+    const height = CELL_PADDING_Y + LABEL_SIZE + 2 + valueLines.length * LINE_GAP + 2;
 
-    pageTarget.drawRectangle({
-      x,
-      y: y - height,
-      width,
-      height,
-      borderWidth: 0.5,
-      borderColor: FIELD_BORDER,
-      color: WHITE,
-    });
     pageTarget.drawText(label.toUpperCase(), {
-      x: x + CELL_PADDING_X,
-      y: y - CELL_PADDING_Y - LABEL_SIZE,
+      x,
+      y: y - LABEL_SIZE,
       size: LABEL_SIZE,
       font: boldFont,
       color: MUTED,
     });
+
     valueLines.forEach((line, i) => {
       pageTarget.drawText(line === '' ? ' ' : line, {
-        x: x + CELL_PADDING_X,
-        y: y - CELL_PADDING_Y - LABEL_SIZE - 3 - i * LINE_GAP - VALUE_SIZE,
+        x,
+        y: y - LABEL_SIZE - 2 - i * LINE_GAP - VALUE_SIZE,
         size: VALUE_SIZE,
         font: regularFont,
         color: TEXT,
       });
+    });
+
+    pageTarget.drawLine({
+      start: { x, y: y - height },
+      end: { x: x + width, y: y - height },
+      thickness: 0.5,
+      color: FORM_LINE,
     });
 
     return height;
