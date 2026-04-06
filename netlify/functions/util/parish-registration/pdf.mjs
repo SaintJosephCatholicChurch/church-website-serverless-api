@@ -380,7 +380,13 @@ export const generateParishRegistrationPdf = async (value) => {
     });
     cursorY -= TITLE_SIZE + 2;
 
-    page.drawText('Parish Registration Form', { x: MARGIN, y: cursorY, size: SECTION_SIZE, font: regularFont, color: BRAND_RED });
+    page.drawText('Parish Registration Form', {
+      x: MARGIN,
+      y: cursorY,
+      size: SECTION_SIZE,
+      font: regularFont,
+      color: BRAND_RED,
+    });
     cursorY -= 10;
 
     page.drawText('1300 N. Main St., Bluffton, IN 46714  ·  (260) 824-1380', {
