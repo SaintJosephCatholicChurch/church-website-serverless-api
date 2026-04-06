@@ -166,7 +166,11 @@ const buildMarriageGroups = (value) => [
     columns: 2,
     rows: [
       { label: 'Marital Status', value: value.marriage?.maritalStatus ?? '' },
-      { label: 'Valid Catholic Marriage?', value: formatChoice(value.marriage?.validCatholicMarriage ?? ''), check: value.marriage?.validCatholicMarriage },
+      {
+        label: 'Valid Catholic Marriage?',
+        value: formatChoice(value.marriage?.validCatholicMarriage ?? ''),
+        check: value.marriage?.validCatholicMarriage,
+      },
     ],
   },
 ];
@@ -267,7 +271,9 @@ const measureGroupCardHeight = (group, cardWidth, regularFont) => {
   let fieldsHeight = 0;
 
   for (const row of layoutRows) {
-    const rowHeight = Math.max(...row.map((field) => measureFieldCardHeight(field.value, field.renderWidth, regularFont)));
+    const rowHeight = Math.max(
+      ...row.map((field) => measureFieldCardHeight(field.value, field.renderWidth, regularFont)),
+    );
     fieldsHeight += rowHeight + 4;
   }
 
@@ -344,11 +350,16 @@ export const generateParishRegistrationPdf = async (value) => {
     });
 
     if (checked) {
-      pageTarget.drawText('✓', {
-        x: x + 1.5,
-        y: y - size + 1.5,
-        size: 8,
-        font: boldFont,
+      pageTarget.drawLine({
+        start: { x: x + 2, y: y - size + 4 },
+        end: { x: x + 4, y: y - size + 2 },
+        thickness: 1.5,
+        color: CHECK_GREEN,
+      });
+      pageTarget.drawLine({
+        start: { x: x + 4, y: y - size + 2 },
+        end: { x: x + 8, y: y - size + 7.5 },
+        thickness: 1.5,
         color: CHECK_GREEN,
       });
     }
@@ -360,23 +371,44 @@ export const generateParishRegistrationPdf = async (value) => {
     page.drawRectangle({ x: MARGIN, y: cursorY - 2, width: CONTENT_WIDTH, height: 3, color: BRAND_RED });
     cursorY -= 16;
 
-    page.drawText('St. Joseph Catholic Church', { x: MARGIN, y: cursorY, size: TITLE_SIZE, font: boldFont, color: BLACK });
+    page.drawText('St. Joseph Catholic Church', {
+      x: MARGIN,
+      y: cursorY,
+      size: TITLE_SIZE,
+      font: boldFont,
+      color: BLACK,
+    });
     cursorY -= TITLE_SIZE + 2;
 
     page.drawText('Parish Registration Form', { x: MARGIN, y: cursorY, size: 13, font: regularFont, color: BRAND_RED });
     cursorY -= 16;
 
     page.drawText('1300 N. Main St., Bluffton, IN 46714  ·  (260) 824-1380', {
-      x: MARGIN, y: cursorY, size: META_SIZE, font: regularFont, color: MUTED,
+      x: MARGIN,
+      y: cursorY,
+      size: META_SIZE,
+      font: regularFont,
+      color: MUTED,
     });
 
     const dateText = `Submitted: ${formatValue(value.family.registrationDate)}`;
     const dateWidth = regularFont.widthOfTextAtSize(dateText, META_SIZE);
 
-    page.drawText(dateText, { x: pageWidth - MARGIN - dateWidth, y: cursorY, size: META_SIZE, font: regularFont, color: MUTED });
+    page.drawText(dateText, {
+      x: pageWidth - MARGIN - dateWidth,
+      y: cursorY,
+      size: META_SIZE,
+      font: regularFont,
+      color: MUTED,
+    });
     cursorY -= META_SIZE + 10;
 
-    page.drawLine({ start: { x: MARGIN, y: cursorY }, end: { x: pageWidth - MARGIN, y: cursorY }, thickness: 0.5, color: DIVIDER });
+    page.drawLine({
+      start: { x: MARGIN, y: cursorY },
+      end: { x: pageWidth - MARGIN, y: cursorY },
+      thickness: 0.5,
+      color: DIVIDER,
+    });
     cursorY -= 16;
   };
 
@@ -387,8 +419,11 @@ export const generateParishRegistrationPdf = async (value) => {
     cursorY -= SECTION_SIZE + 4;
 
     page.drawLine({
-      start: { x: MARGIN, y: cursorY }, end: { x: pageWidth - MARGIN, y: cursorY },
-      thickness: 1, color: BRAND_RED, opacity: 0.25,
+      start: { x: MARGIN, y: cursorY },
+      end: { x: pageWidth - MARGIN, y: cursorY },
+      thickness: 1,
+      color: BRAND_RED,
+      opacity: 0.25,
     });
     cursorY -= 12;
   };
@@ -404,14 +439,30 @@ export const generateParishRegistrationPdf = async (value) => {
     const valueLines = wrapText(rawValue, regularFont, VALUE_SIZE, width - CELL_PADDING_X * 2);
     const height = CELL_PADDING_Y * 2 + LABEL_SIZE + 4 + valueLines.length * LINE_GAP;
 
-    pageTarget.drawRectangle({ x, y: y - height, width, height, borderWidth: 0.6, borderColor: FIELD_BORDER, color: WHITE });
-    pageTarget.drawText(label.toUpperCase(), { x: x + CELL_PADDING_X, y: y - CELL_PADDING_Y - LABEL_SIZE, size: LABEL_SIZE, font: boldFont, color: MUTED });
+    pageTarget.drawRectangle({
+      x,
+      y: y - height,
+      width,
+      height,
+      borderWidth: 0.6,
+      borderColor: FIELD_BORDER,
+      color: WHITE,
+    });
+    pageTarget.drawText(label.toUpperCase(), {
+      x: x + CELL_PADDING_X,
+      y: y - CELL_PADDING_Y - LABEL_SIZE,
+      size: LABEL_SIZE,
+      font: boldFont,
+      color: MUTED,
+    });
 
     valueLines.forEach((line, lineIndex) => {
       pageTarget.drawText(line === '' ? ' ' : line, {
         x: x + CELL_PADDING_X,
         y: y - CELL_PADDING_Y - LABEL_SIZE - 5 - lineIndex * LINE_GAP - VALUE_SIZE,
-        size: VALUE_SIZE, font: regularFont, color: TEXT,
+        size: VALUE_SIZE,
+        font: regularFont,
+        color: TEXT,
       });
     });
 
@@ -429,7 +480,9 @@ export const generateParishRegistrationPdf = async (value) => {
     let fieldsHeight = 0;
 
     for (const row of layoutRows) {
-      const rowHeight = Math.max(...row.map((field) => measureFieldCardHeight(field.value, field.renderWidth, regularFont)));
+      const rowHeight = Math.max(
+        ...row.map((field) => measureFieldCardHeight(field.value, field.renderWidth, regularFont)),
+      );
       fieldsHeight += rowHeight + 4;
     }
 
@@ -441,22 +494,30 @@ export const generateParishRegistrationPdf = async (value) => {
 
     if (group.title) {
       pageTarget.drawText(group.title.toUpperCase(), {
-        x: startX + GROUP_CARD_PADDING, y: innerY - GROUP_SIZE + 1,
-        size: GROUP_SIZE, font: boldFont, color: BRAND_DARK,
+        x: startX + GROUP_CARD_PADDING,
+        y: innerY - GROUP_SIZE + 1,
+        size: GROUP_SIZE,
+        font: boldFont,
+        color: BRAND_DARK,
       });
       innerY -= titleHeight;
     }
 
     if (group.subtitle) {
       pageTarget.drawText(group.subtitle, {
-        x: startX + GROUP_CARD_PADDING, y: innerY - META_SIZE + 1,
-        size: META_SIZE, font: italicFont, color: MUTED,
+        x: startX + GROUP_CARD_PADDING,
+        y: innerY - META_SIZE + 1,
+        size: META_SIZE,
+        font: italicFont,
+        color: MUTED,
       });
       innerY -= subtitleHeight;
     }
 
     for (const row of layoutRows) {
-      const rowHeight = Math.max(...row.map((field) => measureFieldCardHeight(field.value, field.renderWidth, regularFont)));
+      const rowHeight = Math.max(
+        ...row.map((field) => measureFieldCardHeight(field.value, field.renderWidth, regularFont)),
+      );
       let xOffset = startX + GROUP_CARD_PADDING;
 
       for (const field of row) {
@@ -480,22 +541,29 @@ export const generateParishRegistrationPdf = async (value) => {
     const topBlockHeight = checkRowHeight + 6 + baptismDateFieldHeight + 6;
     const sacramentItemHeight = 16 + 4 + (CELL_PADDING_Y * 2 + LABEL_SIZE + 4 + LINE_GAP);
     const sacramentGridHeight = sacramentItemHeight + 8;
-    const totalCardHeight = GROUP_CARD_PADDING * 2 + titleHeight + subtitleHeight + topBlockHeight + sacramentGridHeight;
+    const totalCardHeight =
+      GROUP_CARD_PADDING * 2 + titleHeight + subtitleHeight + topBlockHeight + sacramentGridHeight;
 
     drawRoundedRect(pageTarget, startX, startY - totalCardHeight, cardWidth, totalCardHeight, GROUP_BORDER, GROUP_BG);
 
     let innerY = startY - GROUP_CARD_PADDING;
 
     pageTarget.drawText(group.title.toUpperCase(), {
-      x: startX + GROUP_CARD_PADDING, y: innerY - GROUP_SIZE + 1,
-      size: GROUP_SIZE, font: boldFont, color: BRAND_DARK,
+      x: startX + GROUP_CARD_PADDING,
+      y: innerY - GROUP_SIZE + 1,
+      size: GROUP_SIZE,
+      font: boldFont,
+      color: BRAND_DARK,
     });
     innerY -= titleHeight;
 
     if (group.subtitle) {
       pageTarget.drawText(group.subtitle, {
-        x: startX + GROUP_CARD_PADDING, y: innerY - META_SIZE + 1,
-        size: META_SIZE, font: italicFont, color: MUTED,
+        x: startX + GROUP_CARD_PADDING,
+        y: innerY - META_SIZE + 1,
+        size: META_SIZE,
+        font: italicFont,
+        color: MUTED,
       });
       innerY -= subtitleHeight;
     }
@@ -519,7 +587,13 @@ export const generateParishRegistrationPdf = async (value) => {
       const colX = startX + GROUP_CARD_PADDING + sacIndex * (sacColWidth + COLUMN_GAP);
 
       drawCheckboxOn(pageTarget, colX, innerY, isYes(sacrament.data.received));
-      pageTarget.drawText(`${sacrament.name}?`, { x: colX + 14, y: innerY - 9, size: VALUE_SIZE, font: regularFont, color: TEXT });
+      pageTarget.drawText(`${sacrament.name}?`, {
+        x: colX + 14,
+        y: innerY - 9,
+        size: VALUE_SIZE,
+        font: regularFont,
+        color: TEXT,
+      });
       drawFieldCardOn(pageTarget, colX, innerY - 18, sacColWidth, `${sacrament.name} Date`, sacrament.data.date);
     });
 
@@ -557,8 +631,11 @@ export const generateParishRegistrationPdf = async (value) => {
     adults.forEach((_, index) => {
       const labelX = MARGIN + index * (colWidth + ADULT_COL_GAP);
       page.drawText(`ADULT ${index + 1}`, {
-        x: labelX, y: cursorY,
-        size: 8, font: boldFont, color: MUTED,
+        x: labelX,
+        y: cursorY,
+        size: 8,
+        font: boldFont,
+        color: MUTED,
       });
     });
     cursorY -= 14;
@@ -601,8 +678,11 @@ export const generateParishRegistrationPdf = async (value) => {
     drawRoundedRect(page, MARGIN, cursorY - height, CONTENT_WIDTH, height, GROUP_BORDER, GROUP_BG);
 
     page.drawText(message, {
-      x: MARGIN + GROUP_CARD_PADDING, y: cursorY - GROUP_CARD_PADDING - VALUE_SIZE,
-      size: VALUE_SIZE, font: italicFont, color: MUTED,
+      x: MARGIN + GROUP_CARD_PADDING,
+      y: cursorY - GROUP_CARD_PADDING - VALUE_SIZE,
+      size: VALUE_SIZE,
+      font: italicFont,
+      color: MUTED,
     });
 
     cursorY -= height + GROUP_GAP;
@@ -641,8 +721,20 @@ export const generateParishRegistrationPdf = async (value) => {
     const footerText = `Page ${pageIndex + 1} of ${pages.length}`;
     const footerWidth = regularFont.widthOfTextAtSize(footerText, 7);
 
-    footerPage.drawText(footerText, { x: pageWidth - MARGIN - footerWidth, y: MARGIN - 20, size: 7, font: regularFont, color: MUTED });
-    footerPage.drawText('St. Joseph Catholic Church · Parish Registration', { x: MARGIN, y: MARGIN - 20, size: 7, font: regularFont, color: MUTED });
+    footerPage.drawText(footerText, {
+      x: pageWidth - MARGIN - footerWidth,
+      y: MARGIN - 20,
+      size: 7,
+      font: regularFont,
+      color: MUTED,
+    });
+    footerPage.drawText('St. Joseph Catholic Church · Parish Registration', {
+      x: MARGIN,
+      y: MARGIN - 20,
+      size: 7,
+      font: regularFont,
+      color: MUTED,
+    });
   });
 
   return await pdfDoc.save();

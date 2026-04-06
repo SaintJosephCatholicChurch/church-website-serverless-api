@@ -83,7 +83,8 @@ const buildFieldGrid = (rows) => {
       ${layoutRows
         .map((row) => {
           const cells = row.map((field) => buildFieldCard(field.label, field.value, field.width)).join('');
-          const filler = row.length === 1 && row[0].width === '50%' ? '<td style="width:50%; padding:0 4px 8px 4px;"></td>' : '';
+          const filler =
+            row.length === 1 && row[0].width === '50%' ? '<td style="width:50%; padding:0 4px 8px 4px;"></td>' : '';
           return `<tr>${cells}${filler}</tr>`;
         })
         .join('')}
@@ -119,7 +120,9 @@ const buildSacramentGroup = (title, subtitle, baptism, isCatholic, sacramentList
     </table>
     <table role="presentation" style="width:100%; border-collapse:collapse; margin:4px -4px 0 -4px;">
       <tr>
-        ${sacramentList.map((sac) => `
+        ${sacramentList
+          .map(
+            (sac) => `
           <td style="width:33.33%; vertical-align:top; padding:0 4px;">
             <div style="padding:6px 0;">${buildCheckboxHtml(`${sac.name}?`, isYes(sac.data.received))}</div>
             <table role="presentation" style="width:100%; border-collapse:collapse; border:1px solid ${FIELD_BORDER}; background:#fff;">
@@ -131,7 +134,9 @@ const buildSacramentGroup = (title, subtitle, baptism, isCatholic, sacramentList
               </tr>
             </table>
           </td>
-        `).join('')}
+        `,
+          )
+          .join('')}
       </tr>
     </table>
   </div>
