@@ -461,7 +461,7 @@ export const generateParishRegistrationPdf = async (value) => {
   };
 
   const drawPriestVisitRow = () => {
-    const checkboxWidth = 130;
+    const checkboxWidth = (CONTENT_WIDTH - COLUMN_GAP) / 6;
     const detailWidth = CONTENT_WIDTH - checkboxWidth - COLUMN_GAP;
     const rowHeight = Math.max(
       12,
