@@ -55,7 +55,7 @@ const buildFieldCard = (label, value, width = '50%') => `
           <div style="font-size:9px; font-weight:700; letter-spacing:0.05em; text-transform:uppercase; color:${MUTED_COLOR}; padding:0;">
             ${escapeHtml(label)}
           </div>
-          <div style="padding:1px; font-size:13px; line-height:1.3; color:${TEXT_COLOR}; white-space:pre-line; overflow-wrap:anywhere; background:${FIELD_FILL};">
+          <div style="padding:5px 4px; font-size:13px; line-height:1.3; color:${TEXT_COLOR}; overflow-wrap:anywhere; background:${FIELD_FILL};">
             ${escapeHtml(formatValue(value))}
           </div>
         </td>
