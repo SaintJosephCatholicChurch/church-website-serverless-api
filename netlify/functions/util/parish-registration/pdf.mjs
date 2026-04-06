@@ -20,7 +20,7 @@ const MEMBER_SECTION_TOP_GAP = 8;
 const CHILD_LABEL_TOP_GAP = 6;
 const CHILD_LABEL_TOP_GAP_AFTER_FIRST = 14;
 const CHILD_LABEL_BOTTOM_GAP = -1;
-const HEADER_TOP_ROW_OFFSET = 4;
+const HEADER_TOP_ROW_OFFSET = 5;
 
 // Brand colors
 const BRAND_RED = rgb(0.749, 0.188, 0.235);
@@ -476,7 +476,7 @@ export const generateParishRegistrationPdf = async (value) => {
 
     ensureSpace(rowHeight + FIELD_ROW_GAP);
 
-    const controlY = cursorY - Math.max(0, (rowHeight - 12) / 2);
+    const controlY = cursorY - Math.max(0, (rowHeight - 12) / 2) - 2;
 
     drawCheckboxOn(page, MARGIN, controlY, isYes(value.additional.priestVisitRequested));
     page.drawText('Priest Visit?', {
