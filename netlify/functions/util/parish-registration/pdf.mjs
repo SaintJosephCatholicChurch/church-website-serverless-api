@@ -17,6 +17,7 @@ const SECTION_GAP = 5;
 const SECTION_TOP_GAP = 10;
 const MEMBER_LABEL_GAP = 3;
 const MEMBER_SECTION_TOP_GAP = 8;
+const CHILD_LABEL_TOP_GAP = 6;
 
 // Brand colors
 const BRAND_RED = rgb(0.749, 0.188, 0.235);
@@ -645,64 +646,23 @@ export const generateParishRegistrationPdf = async (value) => {
     cursorY -= MEMBER_SECTION_TOP_GAP - 4;
     drawSectionTitle('Dependent Children Information', { belowTitleGap: -1 });
 
-    const COL_GAP = 10;
-    const numChildCols = value.children.length >= 2 ? 2 : 1;
-    const childColWidth = numChildCols > 1 ? (CONTENT_WIDTH - COL_GAP) / 2 : CONTENT_WIDTH;
+    const measureChild = (child) => {
+      const fieldsH = measureFieldGridHeight(buildChildFields(child), CONTENT_WIDTH, regularFont, 5);
+      return CHILD_LABEL_TOP_GAP + MEMBER_LABEL_GAP + META_SIZE + 2 + fieldsH + SECTION_GAP + childSacramentRowHeight();
+    };
 
-    if (numChildCols === 1) {
-      const child = value.children[0];
-      drawMemberLabel('Child 1', MARGIN, cursorY - MEMBER_LABEL_GAP);
+    value.children.forEach((child, index) => {
+      ensureSpace(measureChild(child));
+
+      cursorY -= CHILD_LABEL_TOP_GAP;
+      drawMemberLabel(`Dependent / Child ${index + 1}`, MARGIN, cursorY - MEMBER_LABEL_GAP);
       cursorY -= MEMBER_LABEL_GAP + META_SIZE + 2;
 
       drawFieldGrid(buildChildFields(child), MARGIN, CONTENT_WIDTH, 5);
 
       cursorY -= SECTION_GAP;
       cursorY = drawChildSacramentRowAt(page, buildChildSacraments(child), MARGIN, cursorY, CONTENT_WIDTH);
-    } else {
-      for (let i = 0; i < value.children.length; i += 2) {
-        const pair = value.children.slice(i, i + 2);
-
-        const measureChild = (child) => {
-          const fieldsH = measureFieldGridHeight(buildChildFields(child), childColWidth, regularFont, 5);
-          return fieldsH + SECTION_GAP + childSacramentRowHeight();
-        };
-
-        const pairH = Math.max(...pair.map(measureChild));
-        ensureSpace(META_SIZE + 4 + pairH);
-
-        pair.forEach((child, j) => {
-          const colX = MARGIN + j * (childColWidth + COL_GAP);
-          const childNum = i + j + 1;
-          drawMemberLabel(`Child ${childNum}`, colX, cursorY - MEMBER_LABEL_GAP);
-        });
-        cursorY -= MEMBER_LABEL_GAP + META_SIZE + 2;
-
-        const rowStartY = cursorY;
-
-        pair.forEach((child, j) => {
-          const colX = MARGIN + j * (childColWidth + COL_GAP);
-          const fieldLayoutRows = measureLayoutRows(buildChildFields(child), childColWidth, 5);
-          let colY = rowStartY;
-
-          for (const row of fieldLayoutRows) {
-            const rowH = Math.max(...row.map((f) => measureFieldCardHeight(f.value, f.renderWidth, regularFont)));
-            let xOff = colX;
-
-            for (const field of row) {
-              drawFieldCardOn(page, xOff, colY, field.renderWidth, field.label, field.value);
-              xOff += field.renderWidth + COLUMN_GAP;
-            }
-
-            colY -= rowH + FIELD_ROW_GAP;
-          }
-
-          colY -= SECTION_GAP;
-          drawChildSacramentRowAt(page, buildChildSacraments(child), colX, colY, childColWidth);
-        });
-
-        cursorY -= pairH;
-      }
-    }
+    });
   }
 
   // Footer on every page
