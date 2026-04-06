@@ -14,6 +14,8 @@ const CELL_PADDING_Y = 1.5;
 const COLUMN_GAP = 4;
 const FIELD_ROW_GAP = 2;
 const SECTION_GAP = 5;
+const SECTION_TOP_GAP = 10;
+const MEMBER_LABEL_GAP = 7;
 
 // Brand colors
 const BRAND_RED = rgb(0.749, 0.188, 0.235);
@@ -90,8 +92,6 @@ const buildFamilyAndMarriageFields = (value) => [
   { label: 'Env#', value: value.family.envelopeNumber },
   { label: 'Marital Status', value: value.marriage?.maritalStatus ?? '' },
   { label: 'Catholic Marriage?', value: formatChoice(value.marriage?.validCatholicMarriage ?? '') },
-  { label: 'Priest Visit?', value: formatChoice(value.additional.priestVisitRequested) },
-  { label: 'Priest Visit Details', value: value.additional.priestVisitDetails },
 ];
 
 const buildAdultFields = (adult) => [
@@ -122,9 +122,9 @@ const buildAdultSacraments = (adult) => ({
 });
 
 const buildChildFields = (child) => [
+  { label: 'Relationship', value: child.relationshipToHeadOfHousehold, span: 2 },
   { label: 'First Name', value: child.firstName },
   { label: 'Last Name', value: child.lastName },
-  { label: 'Relationship', value: child.relationshipToHeadOfHousehold },
   { label: 'Gender', value: child.gender },
   { label: 'Birthdate', value: child.birthdate },
   { label: 'Birthplace', value: child.birthplace },
@@ -149,19 +149,35 @@ const measureLayoutRows = (fields, innerWidth, numCols = 2) => {
   const colWidth = (innerWidth - COLUMN_GAP * (numCols - 1)) / numCols;
   const layoutRows = [];
   let currentRow = [];
+  let currentSpan = 0;
 
   for (const field of fields) {
     if (field.wide) {
       if (currentRow.length > 0) {
         layoutRows.push(currentRow);
         currentRow = [];
+        currentSpan = 0;
       }
       layoutRows.push([{ ...field, renderWidth: innerWidth }]);
     } else {
-      currentRow.push({ ...field, renderWidth: colWidth });
-      if (currentRow.length === numCols) {
+      const span = Math.min(field.span ?? 1, numCols);
+
+      if (currentSpan > 0 && currentSpan + span > numCols) {
         layoutRows.push(currentRow);
         currentRow = [];
+        currentSpan = 0;
+      }
+
+      currentRow.push({
+        ...field,
+        renderWidth: colWidth * span + COLUMN_GAP * (span - 1),
+      });
+      currentSpan += span;
+
+      if (currentSpan === numCols) {
+        layoutRows.push(currentRow);
+        currentRow = [];
+        currentSpan = 0;
       }
     }
   }
@@ -192,6 +208,8 @@ const sacramentBlockHeight = () => {
   const fieldH = CELL_PADDING_Y * 2 + LABEL_SIZE + 3 + LINE_GAP;
   return checkRowH + 4 + fieldH + 4 + checkRowH + 4 + fieldH;
 };
+
+const childSacramentRowHeight = () => 16 + (CELL_PADDING_Y + LABEL_SIZE + 2 + LINE_GAP + 2);
 
 export const generateParishRegistrationPdf = async (value) => {
   const pdfDoc = await PDFDocument.create();
@@ -242,9 +260,6 @@ export const generateParishRegistrationPdf = async (value) => {
   };
 
   const drawHeader = () => {
-    page.drawRectangle({ x: MARGIN, y: cursorY - 2, width: CONTENT_WIDTH, height: 3, color: BRAND_RED });
-    cursorY -= 7;
-
     // Row 1: church name (left) + form title (right)
     page.drawText('St. Joseph Catholic Church', {
       x: MARGIN,
@@ -294,7 +309,7 @@ export const generateParishRegistrationPdf = async (value) => {
 
   const drawSectionTitle = (title) => {
     ensureSpace(SECTION_SIZE + 16);
-    cursorY -= 5;
+    cursorY -= SECTION_TOP_GAP;
     page.drawText(title.toUpperCase(), { x: MARGIN, y: cursorY, size: SECTION_SIZE, font: boldFont, color: BRAND_RED });
     cursorY -= SECTION_SIZE + 1;
     page.drawLine({
@@ -340,6 +355,16 @@ export const generateParishRegistrationPdf = async (value) => {
     return height;
   };
 
+  const drawMemberLabel = (label, x = MARGIN, y = cursorY) => {
+    page.drawText(label.toUpperCase(), {
+      x,
+      y,
+      size: META_SIZE,
+      font: boldFont,
+      color: MUTED,
+    });
+  };
+
   // Draw a flat grid of fields at cursorY, advancing cursorY.
   const drawFieldGrid = (fields, startX = MARGIN, gridWidth = CONTENT_WIDTH, numCols = 2) => {
     const layoutRows = measureLayoutRows(fields, gridWidth, numCols);
@@ -356,6 +381,103 @@ export const generateParishRegistrationPdf = async (value) => {
 
       cursorY -= rowH + FIELD_ROW_GAP;
     }
+  };
+
+  const drawChildSacramentRowAt = (pageTarget, sacData, startX, startY, blockWidth) => {
+    const totalParts = 5;
+    const partWidth = (blockWidth - COLUMN_GAP * (totalParts - 1)) / totalParts;
+    const baptismWidth = partWidth * 2 + COLUMN_GAP;
+    const otherWidth = partWidth;
+    const fieldH = CELL_PADDING_Y + LABEL_SIZE + 2 + LINE_GAP + 2;
+    const items = [
+      {
+        label: 'Baptism',
+        width: baptismWidth,
+        checked: isYes(sacData.baptism.received),
+        value: sacData.baptism.date,
+        extraLabel: 'Catholic?',
+        extraChecked: isYes(sacData.isCatholic),
+      },
+      {
+        label: 'Reconciliation',
+        width: otherWidth,
+        checked: isYes(sacData.sacramentList[0].data.received),
+        value: sacData.sacramentList[0].data.date,
+      },
+      {
+        label: 'First Eucharist',
+        width: otherWidth,
+        checked: isYes(sacData.sacramentList[1].data.received),
+        value: sacData.sacramentList[1].data.date,
+      },
+      {
+        label: 'Confirmation',
+        width: otherWidth,
+        checked: isYes(sacData.sacramentList[2].data.received),
+        value: sacData.sacramentList[2].data.date,
+      },
+    ];
+
+    let x = startX;
+
+    items.forEach((item) => {
+      drawCheckboxOn(pageTarget, x, startY, item.checked);
+      pageTarget.drawText(`${item.label}?`, {
+        x: x + 12,
+        y: startY - 8,
+        size: VALUE_SIZE,
+        font: regularFont,
+        color: TEXT,
+      });
+
+      if (item.extraLabel) {
+        const extraX = x + item.width / 2;
+        drawCheckboxOn(pageTarget, extraX, startY, item.extraChecked);
+        pageTarget.drawText(item.extraLabel, {
+          x: extraX + 12,
+          y: startY - 8,
+          size: VALUE_SIZE,
+          font: regularFont,
+          color: TEXT,
+        });
+      }
+
+      drawFieldCardOn(pageTarget, x, startY - 16, item.width, `${item.label} Date`, item.value);
+      x += item.width + COLUMN_GAP;
+    });
+
+    return startY - 16 - fieldH;
+  };
+
+  const drawPriestVisitRow = () => {
+    const checkboxWidth = 130;
+    const detailWidth = CONTENT_WIDTH - checkboxWidth - COLUMN_GAP;
+    const rowHeight = Math.max(
+      12,
+      measureFieldCardHeight(value.additional.priestVisitDetails, detailWidth, regularFont),
+    );
+
+    ensureSpace(rowHeight + FIELD_ROW_GAP);
+
+    drawCheckboxOn(page, MARGIN, cursorY, isYes(value.additional.priestVisitRequested));
+    page.drawText('Priest Visit?', {
+      x: MARGIN + 13,
+      y: cursorY - 8,
+      size: VALUE_SIZE,
+      font: regularFont,
+      color: TEXT,
+    });
+
+    drawFieldCardOn(
+      page,
+      MARGIN + checkboxWidth + COLUMN_GAP,
+      cursorY,
+      detailWidth,
+      'Priest Visit Details',
+      value.additional.priestVisitDetails,
+    );
+
+    cursorY -= rowHeight + FIELD_ROW_GAP;
   };
 
   // Draw sacrament block at the given position. Returns ending Y (does NOT touch cursorY).
@@ -414,7 +536,7 @@ export const generateParishRegistrationPdf = async (value) => {
     const COL_GAP = 10;
     const colWidth = (CONTENT_WIDTH - COL_GAP) / 2;
 
-    drawSectionTitle('Adult Members');
+    drawSectionTitle('Individual Member Information');
 
     const measureAdultCol = (adult) => {
       const fieldsH = measureFieldGridHeight(buildAdultFields(adult), colWidth, regularFont, 2);
@@ -426,18 +548,9 @@ export const generateParishRegistrationPdf = async (value) => {
 
     adults.forEach((adult, i) => {
       const colX = MARGIN + i * (colWidth + COL_GAP);
-      page.drawText(
-        `ADULT ${i + 1} \u2014 ${formatValue(adult.firstName)} ${formatValue(adult.lastName)}`.toUpperCase(),
-        {
-          x: colX,
-          y: cursorY,
-          size: META_SIZE,
-          font: boldFont,
-          color: MUTED,
-        },
-      );
+      drawMemberLabel(`Adult ${i + 1}`, colX, cursorY - MEMBER_LABEL_GAP);
     });
-    cursorY -= META_SIZE + 4;
+    cursorY -= MEMBER_LABEL_GAP + META_SIZE + 4;
 
     const colStartY = cursorY;
 
@@ -474,11 +587,12 @@ export const generateParishRegistrationPdf = async (value) => {
 
   drawSectionTitle('Family Information');
   drawFieldGrid(buildFamilyAndMarriageFields(value), MARGIN, CONTENT_WIDTH, 3);
+  drawPriestVisitRow();
 
   drawAdultColumns(value.adults);
 
   if (value.children.length > 0) {
-    drawSectionTitle('Children / Dependents');
+    drawSectionTitle('Dependent Children Information');
 
     const COL_GAP = 10;
     const numChildCols = value.children.length >= 2 ? 2 : 1;
@@ -486,29 +600,20 @@ export const generateParishRegistrationPdf = async (value) => {
 
     if (numChildCols === 1) {
       const child = value.children[0];
-      page.drawText(`CHILD 1 \u2014 ${formatValue(child.firstName)} ${formatValue(child.lastName)}`.toUpperCase(), {
-        x: MARGIN,
-        y: cursorY,
-        size: META_SIZE,
-        font: boldFont,
-        color: MUTED,
-      });
-      cursorY -= META_SIZE + 4;
+      drawMemberLabel('Child 1', MARGIN, cursorY - MEMBER_LABEL_GAP);
+      cursorY -= MEMBER_LABEL_GAP + META_SIZE + 4;
 
-      drawFieldGrid(buildChildFields(child), MARGIN, CONTENT_WIDTH, 3);
+      drawFieldGrid(buildChildFields(child), MARGIN, CONTENT_WIDTH, 5);
 
       cursorY -= SECTION_GAP;
-      page.drawText('SACRAMENTS', { x: MARGIN, y: cursorY, size: META_SIZE, font: boldFont, color: BRAND_DARK });
-      cursorY -= META_SIZE + 4;
-
-      cursorY = drawSacramentBlockAt(page, buildChildSacraments(child), MARGIN, cursorY, CONTENT_WIDTH);
+      cursorY = drawChildSacramentRowAt(page, buildChildSacraments(child), MARGIN, cursorY, CONTENT_WIDTH);
     } else {
       for (let i = 0; i < value.children.length; i += 2) {
         const pair = value.children.slice(i, i + 2);
 
         const measureChild = (child) => {
-          const fieldsH = measureFieldGridHeight(buildChildFields(child), childColWidth, regularFont, 2);
-          return fieldsH + SECTION_GAP + META_SIZE + 4 + sacramentBlockHeight();
+          const fieldsH = measureFieldGridHeight(buildChildFields(child), childColWidth, regularFont, 5);
+          return fieldsH + SECTION_GAP + childSacramentRowHeight();
         };
 
         const pairH = Math.max(...pair.map(measureChild));
@@ -517,18 +622,15 @@ export const generateParishRegistrationPdf = async (value) => {
         pair.forEach((child, j) => {
           const colX = MARGIN + j * (childColWidth + COL_GAP);
           const childNum = i + j + 1;
-          page.drawText(
-            `CHILD ${childNum} \u2014 ${formatValue(child.firstName)} ${formatValue(child.lastName)}`.toUpperCase(),
-            { x: colX, y: cursorY, size: META_SIZE, font: boldFont, color: MUTED },
-          );
+          drawMemberLabel(`Child ${childNum}`, colX, cursorY - MEMBER_LABEL_GAP);
         });
-        cursorY -= META_SIZE + 4;
+        cursorY -= MEMBER_LABEL_GAP + META_SIZE + 4;
 
         const rowStartY = cursorY;
 
         pair.forEach((child, j) => {
           const colX = MARGIN + j * (childColWidth + COL_GAP);
-          const fieldLayoutRows = measureLayoutRows(buildChildFields(child), childColWidth, 2);
+          const fieldLayoutRows = measureLayoutRows(buildChildFields(child), childColWidth, 5);
           let colY = rowStartY;
 
           for (const row of fieldLayoutRows) {
@@ -544,10 +646,7 @@ export const generateParishRegistrationPdf = async (value) => {
           }
 
           colY -= SECTION_GAP;
-          page.drawText('SACRAMENTS', { x: colX, y: colY, size: META_SIZE, font: boldFont, color: BRAND_DARK });
-          colY -= META_SIZE + 4;
-
-          drawSacramentBlockAt(page, buildChildSacraments(child), colX, colY, childColWidth);
+          drawChildSacramentRowAt(page, buildChildSacraments(child), colX, colY, childColWidth);
         });
 
         cursorY -= pairH;
