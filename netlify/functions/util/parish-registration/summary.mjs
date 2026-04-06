@@ -159,7 +159,7 @@ const buildSacramentGroup = (baptism, isCatholic, sacramentList) => `
         <td style="width:50%; padding:0 4px 6px 4px;">${buildCheckboxHtml('Catholic?', isYes(isCatholic))}</td>
       </tr>
     </table>
-    ${buildFieldGrid([{ label: 'Baptism Date', value: baptism.date, wide: true }])}
+    ${buildFieldCard([{ label: 'Baptism Date', value: baptism.date, wide: true }])}
     <table role="presentation" style="width:100%; border-collapse:collapse; margin-top:4px;">
       <tr>
         ${sacramentList
@@ -167,7 +167,7 @@ const buildSacramentGroup = (baptism, isCatholic, sacramentList) => `
             (sac) => `
               <td style="width:33.33%; vertical-align:top; padding:0 4px;">
                 <div style="padding:2px 0 6px 6px;">${buildCheckboxHtml(`${sac.name}?`, isYes(sac.data.received))}</div>
-                ${buildFieldGrid([{ label: `${sac.name} Date`, value: sac.data.date, wide: true }])}
+                ${buildFieldCard([{ label: `${sac.name} Date`, value: sac.data.date, wide: true }])}
               </td>
             `,
           )
