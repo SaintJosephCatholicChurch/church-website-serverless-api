@@ -12,10 +12,11 @@ const LINE_GAP = 7;
 const CELL_PADDING_X = 3;
 const CELL_PADDING_Y = 1.5;
 const COLUMN_GAP = 4;
-const FIELD_ROW_GAP = 2;
+const FIELD_ROW_GAP = 5;
 const SECTION_GAP = 5;
 const SECTION_TOP_GAP = 10;
 const MEMBER_LABEL_GAP = 7;
+const MEMBER_SECTION_TOP_GAP = 8;
 
 // Brand colors
 const BRAND_RED = rgb(0.749, 0.188, 0.235);
@@ -25,6 +26,7 @@ const TEXT = rgb(0.18, 0.18, 0.18);
 const MUTED = rgb(0.42, 0.42, 0.42);
 const FIELD_BORDER = rgb(0.82, 0.82, 0.82);
 const FORM_LINE = rgb(0.76, 0.76, 0.76);
+const FIELD_FILL = rgb(0.985, 0.985, 0.985);
 const DIVIDER = rgb(0.88, 0.88, 0.88);
 const WHITE = rgb(1, 1, 1);
 const CHECK_GREEN = rgb(0.18, 0.62, 0.28);
@@ -122,7 +124,7 @@ const buildAdultSacraments = (adult) => ({
 });
 
 const buildChildFields = (child) => [
-  { label: 'Relationship', value: child.relationshipToHeadOfHousehold, span: 2 },
+  { label: 'Relationship to Head of Household', value: child.relationshipToHeadOfHousehold, span: 2 },
   { label: 'First Name', value: child.firstName },
   { label: 'Last Name', value: child.lastName },
   { label: 'Gender', value: child.gender },
@@ -188,7 +190,7 @@ const measureLayoutRows = (fields, innerWidth, numCols = 2) => {
 
 const measureFieldCardHeight = (rawValue, width, font) => {
   const valueLines = wrapText(rawValue, font, VALUE_SIZE, width - CELL_PADDING_X * 2);
-  return CELL_PADDING_Y + LABEL_SIZE + 2 + valueLines.length * LINE_GAP + 2;
+  return CELL_PADDING_Y * 2 + LABEL_SIZE + 3 + valueLines.length * LINE_GAP + 2;
 };
 
 const measureFieldGridHeight = (fields, gridWidth, regularFont, numCols = 2) => {
@@ -325,11 +327,21 @@ export const generateParishRegistrationPdf = async (value) => {
   // Draw a single form field at an exact position. Returns height used.
   const drawFieldCardOn = (pageTarget, x, y, width, label, rawValue) => {
     const valueLines = wrapText(rawValue, regularFont, VALUE_SIZE, width - CELL_PADDING_X * 2);
-    const height = CELL_PADDING_Y + LABEL_SIZE + 2 + valueLines.length * LINE_GAP + 2;
+    const height = CELL_PADDING_Y * 2 + LABEL_SIZE + 3 + valueLines.length * LINE_GAP + 2;
+
+    pageTarget.drawRectangle({
+      x,
+      y: y - height,
+      width,
+      height,
+      borderWidth: 0.45,
+      borderColor: FORM_LINE,
+      color: FIELD_FILL,
+    });
 
     pageTarget.drawText(label.toUpperCase(), {
-      x,
-      y: y - LABEL_SIZE,
+      x: x + CELL_PADDING_X,
+      y: y - CELL_PADDING_Y - LABEL_SIZE,
       size: LABEL_SIZE,
       font: boldFont,
       color: MUTED,
@@ -337,19 +349,12 @@ export const generateParishRegistrationPdf = async (value) => {
 
     valueLines.forEach((line, i) => {
       pageTarget.drawText(line === '' ? ' ' : line, {
-        x,
-        y: y - LABEL_SIZE - 2 - i * LINE_GAP - VALUE_SIZE,
+        x: x + CELL_PADDING_X,
+        y: y - CELL_PADDING_Y - LABEL_SIZE - 3 - i * LINE_GAP - VALUE_SIZE,
         size: VALUE_SIZE,
         font: regularFont,
         color: TEXT,
       });
-    });
-
-    pageTarget.drawLine({
-      start: { x, y: y - height },
-      end: { x: x + width, y: y - height },
-      thickness: 0.5,
-      color: FORM_LINE,
     });
 
     return height;
@@ -459,10 +464,12 @@ export const generateParishRegistrationPdf = async (value) => {
 
     ensureSpace(rowHeight + FIELD_ROW_GAP);
 
-    drawCheckboxOn(page, MARGIN, cursorY, isYes(value.additional.priestVisitRequested));
+    const controlY = cursorY - Math.max(0, (rowHeight - 12) / 2);
+
+    drawCheckboxOn(page, MARGIN, controlY, isYes(value.additional.priestVisitRequested));
     page.drawText('Priest Visit?', {
       x: MARGIN + 13,
-      y: cursorY - 8,
+      y: controlY - 7,
       size: VALUE_SIZE,
       font: regularFont,
       color: TEXT,
@@ -536,6 +543,7 @@ export const generateParishRegistrationPdf = async (value) => {
     const COL_GAP = 10;
     const colWidth = (CONTENT_WIDTH - COL_GAP) / 2;
 
+    cursorY -= MEMBER_SECTION_TOP_GAP;
     drawSectionTitle('Individual Member Information');
 
     const measureAdultCol = (adult) => {
@@ -592,6 +600,7 @@ export const generateParishRegistrationPdf = async (value) => {
   drawAdultColumns(value.adults);
 
   if (value.children.length > 0) {
+    cursorY -= MEMBER_SECTION_TOP_GAP;
     drawSectionTitle('Dependent Children Information');
 
     const COL_GAP = 10;
