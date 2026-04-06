@@ -48,7 +48,7 @@ export const buildParishRegistrationSummaryText = (value) => {
   const lines = [
     'Someone registered at St. Joseph Catholic Church.',
     '',
-    `Household: ${formatValue(value.family.lastName)} / ${formatValue(value.family.firstNames)}`,
+    `Household: ${formatValue(value.family.firstNames)} ${formatValue(value.family.lastName)}`,
     `Adults: ${value.adults.length} (${formatAdultNames(value.adults)})`,
     `Children / Dependents: ${value.children.length}`,
     `Submitted: ${formatValue(value.family.registrationDate)}`,
@@ -61,9 +61,8 @@ export const buildParishRegistrationSummaryText = (value) => {
 };
 
 export const buildParishRegistrationSummaryHtml = (value) => {
-  const householdLine = `${formatValue(value.family.lastName)} / ${formatValue(value.family.firstNames)}`;
+  const householdLine = `${formatValue(value.family.firstNames)} ${formatValue(value.family.lastName)}`;
   const adultNames = formatAdultNames(value.adults);
-  const maritalStatus = formatTitleCase(value.marriage?.maritalStatus ?? '');
 
   return `
     <div style="margin:0; padding:24px 0; font-family:Arial, Helvetica, sans-serif; color:#202020; background:#f5f5f5;">
@@ -116,14 +115,6 @@ export const buildParishRegistrationSummaryHtml = (value) => {
                 </td>
                 <td style="padding:0 0 10px 0; font-size:14px; line-height:1.4; color:#202020;">
                   ${escapeHtml(formatValue(value.family.familyEmail))}
-                </td>
-              </tr>
-              <tr>
-                <td style="width:40%; padding:0 10px 0 0; font-size:12px; font-weight:700; letter-spacing:0.04em; text-transform:uppercase; color:#5c5c5c;">
-                  Marital Status
-                </td>
-                <td style="padding:0; font-size:14px; line-height:1.4; color:#202020;">
-                  ${escapeHtml(formatValue(maritalStatus))}
                 </td>
               </tr>
             </table>
