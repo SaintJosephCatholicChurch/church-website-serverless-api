@@ -317,13 +317,11 @@ export const generateParishRegistrationPdf = async (value) => {
     cursorY -= 6;
   };
 
-  const drawSectionTitle = (title, options = {}) => {
-    const { belowTitleGap = 1 } = options;
-
+  const drawSectionTitle = (title) => {
     ensureSpace(SECTION_SIZE + 16);
     cursorY -= SECTION_TOP_GAP;
     page.drawText(title.toUpperCase(), { x: MARGIN, y: cursorY, size: SECTION_SIZE, font: boldFont, color: BRAND_RED });
-    cursorY -= SECTION_SIZE + belowTitleGap;
+    cursorY -= SECTION_SIZE - 2;
     page.drawLine({
       start: { x: MARGIN, y: cursorY },
       end: { x: pageWidth - MARGIN, y: cursorY },
@@ -590,7 +588,7 @@ export const generateParishRegistrationPdf = async (value) => {
     const colWidth = (CONTENT_WIDTH - COL_GAP) / 2;
 
     cursorY -= MEMBER_SECTION_TOP_GAP - 4;
-    drawSectionTitle('Individual Member Information', { belowTitleGap: -1 });
+    drawSectionTitle('Individual Member Information');
 
     const measureAdultCol = (adult) => {
       const fieldsH = measureFieldGridHeight(buildAdultFields(adult), colWidth, regularFont, 2);
@@ -645,7 +643,7 @@ export const generateParishRegistrationPdf = async (value) => {
 
   drawHeader();
 
-  drawSectionTitle('Family Information', { belowTitleGap: -1 });
+  drawSectionTitle('Family Information');
   drawFieldGrid(buildFamilyAndMarriageFields(value), MARGIN, CONTENT_WIDTH, 3);
 
   drawAdultColumns(value.adults);
@@ -655,7 +653,7 @@ export const generateParishRegistrationPdf = async (value) => {
 
   if (value.children.length > 0) {
     cursorY -= MEMBER_SECTION_TOP_GAP - 4;
-    drawSectionTitle('Dependent Children Information', { belowTitleGap: -1 });
+    drawSectionTitle('Dependent Children Information');
 
     const measureChild = (child) => {
       const fieldsH = measureFieldGridHeight(buildChildFields(child), CONTENT_WIDTH, regularFont, 5);
