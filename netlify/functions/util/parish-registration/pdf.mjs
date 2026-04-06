@@ -520,7 +520,7 @@ export const generateParishRegistrationPdf = async (value) => {
       formatTitleCase(value.marriage?.maritalStatus ?? ''),
     );
 
-    const checkboxY = cursorY - Math.max(0, (rowHeight - 12) / 2) - 1;
+    const checkboxY = cursorY - Math.max(0, (rowHeight - 12) / 2) - 3;
     drawCheckboxOn(page, checkboxX, checkboxY, isYes(value.marriage?.validCatholicMarriage));
     page.drawText('Valid Catholic Marriage?', {
       x: checkboxX + 13,
