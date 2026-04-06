@@ -9,10 +9,12 @@ const GROUP_SIZE = 11;
 const LABEL_SIZE = 8;
 const VALUE_SIZE = 10;
 const META_SIZE = 9;
-const LINE_GAP = 12;
-const CELL_PADDING = 8;
-const ROW_GAP = 8;
-const COLUMN_GAP = 10;
+const LINE_GAP = 11;
+const CELL_PADDING = 12;
+const ROW_GAP = 0;
+const COLUMN_GAP = 16;
+const GROUP_CARD_PADDING = 10;
+const GROUP_TITLE_GAP = 8;
 
 const BLACK = rgb(0.12, 0.12, 0.12);
 const TEXT = rgb(0.22, 0.22, 0.22);
@@ -280,10 +282,18 @@ export const generateParishRegistrationPdf = async (value) => {
       color: BLACK,
     });
     cursorY -= SECTION_SIZE + 8;
+    page.drawLine({
+      start: { x: MARGIN, y: cursorY },
+      end: { x: pageWidth - MARGIN, y: cursorY },
+      thickness: 1,
+      color: DIVIDER,
+    });
+    cursorY -= 10;
   };
 
+  const getGroupHeadingHeight = (subtitle) => GROUP_SIZE + 3 + (subtitle ? META_SIZE + 6 : 0);
+
   const drawGroupTitle = (title, subtitle) => {
-    ensureSpace(subtitle ? 28 : 16);
     page.drawText(title, {
       x: MARGIN,
       y: cursorY,
@@ -305,14 +315,18 @@ export const generateParishRegistrationPdf = async (value) => {
     }
   };
 
-  const drawGrid = (rows, columns = 2) => {
-    const cellWidth = columns === 1 ? CONTENT_WIDTH : (CONTENT_WIDTH - COLUMN_GAP * (columns - 1)) / columns;
+  const getGridMetrics = (rows, columns = 2) => {
+    const rowCount = Math.ceil(rows.length / columns);
+    const cardWidth = CONTENT_WIDTH;
+    const innerWidth = cardWidth - GROUP_CARD_PADDING * 2;
+    const cellWidth = columns === 1 ? innerWidth : (innerWidth - COLUMN_GAP * (columns - 1)) / columns;
+    const rowMetrics = [];
 
     for (let index = 0; index < rows.length; index += columns) {
       const rowItems = rows.slice(index, index + columns);
       const cellMetrics = rowItems.map(([label, rawValue]) => {
         const valueLines = wrapText(rawValue, regularFont, VALUE_SIZE, cellWidth - CELL_PADDING * 2);
-        const height = CELL_PADDING * 2 + LABEL_SIZE + 4 + valueLines.length * LINE_GAP;
+        const height = CELL_PADDING * 2 + LABEL_SIZE + 5 + valueLines.length * LINE_GAP;
 
         return {
           label,
@@ -320,26 +334,74 @@ export const generateParishRegistrationPdf = async (value) => {
           height,
         };
       });
-      const rowHeight = Math.max(...cellMetrics.map((metric) => metric.height));
 
-      ensureSpace(rowHeight + ROW_GAP);
+      rowMetrics.push({
+        cellMetrics,
+        rowHeight: Math.max(...cellMetrics.map((metric) => metric.height)),
+      });
+    }
 
-      cellMetrics.forEach((metric, columnIndex) => {
-        const x = MARGIN + columnIndex * (cellWidth + COLUMN_GAP);
-        const y = cursorY - rowHeight;
+    const totalHeight =
+      GROUP_CARD_PADDING * 2 +
+      rowMetrics.reduce((sum, row) => sum + row.rowHeight, 0) +
+      Math.max(0, rowCount - 1) * ROW_GAP;
 
-        page.drawRectangle({
-          x,
-          y,
-          width: cellWidth,
-          height: rowHeight,
-          borderWidth: 0.8,
-          borderColor: BORDER,
+    return {
+      cardWidth,
+      cellWidth,
+      rowMetrics,
+      totalHeight,
+      columns,
+    };
+  };
+
+  const drawGrid = (rows, columns = 2) => {
+    const metrics = getGridMetrics(rows, columns);
+    ensureSpace(metrics.totalHeight);
+
+    const cardTop = cursorY;
+    const cardBottom = cursorY - metrics.totalHeight;
+
+    page.drawRectangle({
+      x: MARGIN,
+      y: cardBottom,
+      width: metrics.cardWidth,
+      height: metrics.totalHeight,
+      borderWidth: 0.9,
+      borderColor: BORDER,
+    });
+
+    let rowTop = cardTop - GROUP_CARD_PADDING;
+
+    metrics.rowMetrics.forEach((row, rowIndex) => {
+      const rowBottom = rowTop - row.rowHeight;
+
+      if (rowIndex > 0) {
+        page.drawLine({
+          start: { x: MARGIN, y: rowTop },
+          end: { x: MARGIN + metrics.cardWidth, y: rowTop },
+          thickness: 0.7,
+          color: DIVIDER,
         });
+      }
+
+      row.cellMetrics.forEach((metric, columnIndex) => {
+        const x = MARGIN + GROUP_CARD_PADDING + columnIndex * (metrics.cellWidth + COLUMN_GAP);
+
+        if (columnIndex > 0) {
+          const dividerX = x - COLUMN_GAP / 2;
+
+          page.drawLine({
+            start: { x: dividerX, y: rowTop },
+            end: { x: dividerX, y: rowBottom },
+            thickness: 0.7,
+            color: DIVIDER,
+          });
+        }
 
         page.drawText(metric.label.toUpperCase(), {
           x: x + CELL_PADDING,
-          y: cursorY - CELL_PADDING - LABEL_SIZE,
+          y: rowTop - CELL_PADDING - LABEL_SIZE,
           size: LABEL_SIZE,
           font: boldFont,
           color: MUTED,
@@ -348,7 +410,7 @@ export const generateParishRegistrationPdf = async (value) => {
         metric.valueLines.forEach((line, lineIndex) => {
           page.drawText(line === '' ? ' ' : line, {
             x: x + CELL_PADDING,
-            y: cursorY - CELL_PADDING - LABEL_SIZE - 6 - lineIndex * LINE_GAP - VALUE_SIZE,
+            y: rowTop - CELL_PADDING - LABEL_SIZE - 6 - lineIndex * LINE_GAP - VALUE_SIZE,
             size: VALUE_SIZE,
             font: regularFont,
             color: TEXT,
@@ -356,13 +418,15 @@ export const generateParishRegistrationPdf = async (value) => {
         });
       });
 
-      cursorY -= rowHeight + ROW_GAP;
-    }
+      rowTop = rowBottom - ROW_GAP;
+    });
+
+    cursorY = cardBottom - 10;
   };
 
   const drawEmptyState = (message) => {
-    const lines = wrapText(message, regularFont, VALUE_SIZE, CONTENT_WIDTH - CELL_PADDING * 2);
-    const height = CELL_PADDING * 2 + lines.length * LINE_GAP;
+    const lines = wrapText(message, regularFont, VALUE_SIZE, CONTENT_WIDTH - GROUP_CARD_PADDING * 2 - CELL_PADDING * 2);
+    const height = GROUP_CARD_PADDING * 2 + CELL_PADDING * 2 + lines.length * LINE_GAP;
 
     ensureSpace(height + ROW_GAP);
     page.drawRectangle({
@@ -376,24 +440,29 @@ export const generateParishRegistrationPdf = async (value) => {
 
     lines.forEach((line, index) => {
       page.drawText(line, {
-        x: MARGIN + CELL_PADDING,
-        y: cursorY - CELL_PADDING - index * LINE_GAP - VALUE_SIZE,
+        x: MARGIN + GROUP_CARD_PADDING + CELL_PADDING,
+        y: cursorY - GROUP_CARD_PADDING - CELL_PADDING - index * LINE_GAP - VALUE_SIZE,
         size: VALUE_SIZE,
         font: regularFont,
         color: TEXT,
       });
     });
 
-    cursorY -= height + ROW_GAP;
+    cursorY -= height + 10;
   };
 
   const drawGroups = (groups) => {
     groups.forEach((group, index) => {
+      const headingHeight = getGroupHeadingHeight(group.subtitle);
+      const gridMetrics = getGridMetrics(group.rows, group.columns);
+
+      ensureSpace(headingHeight + GROUP_TITLE_GAP + gridMetrics.totalHeight + 10);
       drawGroupTitle(group.title, group.subtitle);
+      cursorY -= GROUP_TITLE_GAP;
       drawGrid(group.rows, group.columns);
 
       if (index < groups.length - 1) {
-        cursorY -= 2;
+        cursorY -= 4;
       }
     });
   };
@@ -402,21 +471,21 @@ export const generateParishRegistrationPdf = async (value) => {
 
   drawSectionTitle('Family Information');
   drawGroups(buildFamilyGroups(value));
-  cursorY -= 6;
+  cursorY -= 8;
 
   value.adults.forEach((adult, index) => {
     drawSectionTitle(`Adult Member ${index + 1}`);
     drawGroups(buildAdultGroups(adult));
-    cursorY -= 6;
+    cursorY -= 8;
   });
 
   drawSectionTitle('Marriage Information');
   drawGroups(buildMarriageGroups(value));
-  cursorY -= 6;
+  cursorY -= 8;
 
   drawSectionTitle('Additional Information');
   drawGroups(buildAdditionalGroups(value));
-  cursorY -= 6;
+  cursorY -= 8;
 
   drawSectionTitle('Children / Dependents');
 
@@ -425,10 +494,11 @@ export const generateParishRegistrationPdf = async (value) => {
   } else {
     value.children.forEach((child, index) => {
       drawGroupTitle(`Child / Dependent ${index + 1}`);
+      cursorY -= GROUP_TITLE_GAP;
       drawGroups(buildChildGroups(child));
 
       if (index < value.children.length - 1) {
-        cursorY -= 6;
+        cursorY -= 8;
       }
     });
   }
