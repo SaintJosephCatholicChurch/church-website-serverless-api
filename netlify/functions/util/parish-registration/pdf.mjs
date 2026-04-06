@@ -18,8 +18,8 @@ const SECTION_TOP_GAP = 10;
 const MEMBER_LABEL_GAP = 3;
 const MEMBER_SECTION_TOP_GAP = 8;
 const CHILD_LABEL_TOP_GAP = 6;
-const CHILD_LABEL_TOP_GAP_AFTER_FIRST = 12;
-const CHILD_LABEL_BOTTOM_GAP = 1;
+const CHILD_LABEL_TOP_GAP_AFTER_FIRST = 14;
+const CHILD_LABEL_BOTTOM_GAP = -1;
 
 // Brand colors
 const BRAND_RED = rgb(0.749, 0.188, 0.235);
@@ -603,9 +603,10 @@ export const generateParishRegistrationPdf = async (value) => {
 
     if (adults.length > 1) {
       const dividerX = MARGIN + colWidth + COL_GAP / 2;
+      const dividerBottomY = colStartY - totalH - SECTION_GAP - 4;
       page.drawLine({
         start: { x: dividerX, y: colStartY - 1 },
-        end: { x: dividerX, y: colStartY - totalH + 1 },
+        end: { x: dividerX, y: dividerBottomY },
         thickness: 0.6,
         color: BRAND_RED,
         opacity: 0.18,
