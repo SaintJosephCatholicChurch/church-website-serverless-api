@@ -1,20 +1,20 @@
 import { PDFDocument, StandardFonts, rgb } from 'pdf-lib';
 
 const PAGE_SIZE = [612, 792];
-const MARGIN = 36;
+const MARGIN = 26;
 const CONTENT_WIDTH = PAGE_SIZE[0] - MARGIN * 2;
-const TITLE_SIZE = 18;
-const SECTION_SIZE = 13;
-const GROUP_SIZE = 9;
-const LABEL_SIZE = 7;
-const VALUE_SIZE = 10;
-const META_SIZE = 8;
-const LINE_GAP = 12;
-const CELL_PADDING_X = 10;
-const CELL_PADDING_Y = 8;
-const COLUMN_GAP = 12;
-const GROUP_CARD_PADDING = 12;
-const GROUP_GAP = 10;
+const TITLE_SIZE = 16;
+const SECTION_SIZE = 11;
+const GROUP_SIZE = 8;
+const LABEL_SIZE = 6;
+const VALUE_SIZE = 9;
+const META_SIZE = 7;
+const LINE_GAP = 10;
+const CELL_PADDING_X = 7;
+const CELL_PADDING_Y = 4;
+const COLUMN_GAP = 8;
+const GROUP_CARD_PADDING = 7;
+const GROUP_GAP = 4;
 
 // Brand colors matching the UI
 const BRAND_RED = rgb(0.749, 0.188, 0.235); // #bf303c
@@ -285,9 +285,9 @@ const measureSacramentCardHeight = (group) => {
   const subtitleHeight = group.subtitle ? META_SIZE + 6 : 0;
   const checkRowHeight = 16;
   const baptismDateFieldHeight = CELL_PADDING_Y * 2 + LABEL_SIZE + 4 + LINE_GAP;
-  const topBlockHeight = checkRowHeight + 6 + baptismDateFieldHeight + 6;
+  const topBlockHeight = checkRowHeight + 4 + baptismDateFieldHeight + 4;
   const sacramentItemHeight = 16 + 4 + (CELL_PADDING_Y * 2 + LABEL_SIZE + 4 + LINE_GAP);
-  const sacramentGridHeight = sacramentItemHeight + 8;
+  const sacramentGridHeight = sacramentItemHeight + 4;
 
   return GROUP_CARD_PADDING * 2 + titleHeight + subtitleHeight + topBlockHeight + sacramentGridHeight;
 };
@@ -369,7 +369,7 @@ export const generateParishRegistrationPdf = async (value) => {
 
   const drawHeader = () => {
     page.drawRectangle({ x: MARGIN, y: cursorY - 2, width: CONTENT_WIDTH, height: 3, color: BRAND_RED });
-    cursorY -= 16;
+    cursorY -= 12;
 
     page.drawText('St. Joseph Catholic Church', {
       x: MARGIN,
@@ -380,8 +380,8 @@ export const generateParishRegistrationPdf = async (value) => {
     });
     cursorY -= TITLE_SIZE + 2;
 
-    page.drawText('Parish Registration Form', { x: MARGIN, y: cursorY, size: 13, font: regularFont, color: BRAND_RED });
-    cursorY -= 16;
+    page.drawText('Parish Registration Form', { x: MARGIN, y: cursorY, size: SECTION_SIZE, font: regularFont, color: BRAND_RED });
+    cursorY -= 10;
 
     page.drawText('1300 N. Main St., Bluffton, IN 46714  ·  (260) 824-1380', {
       x: MARGIN,
@@ -401,7 +401,7 @@ export const generateParishRegistrationPdf = async (value) => {
       font: regularFont,
       color: MUTED,
     });
-    cursorY -= META_SIZE + 10;
+    cursorY -= META_SIZE + 8;
 
     page.drawLine({
       start: { x: MARGIN, y: cursorY },
@@ -409,11 +409,12 @@ export const generateParishRegistrationPdf = async (value) => {
       thickness: 0.5,
       color: DIVIDER,
     });
-    cursorY -= 16;
+    cursorY -= 10;
   };
 
   const drawSectionTitle = (title) => {
-    ensureSpace(SECTION_SIZE + 20);
+    ensureSpace(SECTION_SIZE + 20 + 16);
+    cursorY -= 16;
 
     page.drawText(title.toUpperCase(), { x: MARGIN, y: cursorY, size: SECTION_SIZE, font: boldFont, color: BRAND_RED });
     cursorY -= SECTION_SIZE + 4;
@@ -425,13 +426,13 @@ export const generateParishRegistrationPdf = async (value) => {
       color: BRAND_RED,
       opacity: 0.25,
     });
-    cursorY -= 12;
+    cursorY -= 8;
   };
 
   const drawSubsectionTitle = (title) => {
-    ensureSpace(18);
-    page.drawText(title, { x: MARGIN, y: cursorY, size: 11, font: boldFont, color: MUTED });
-    cursorY -= 16;
+    ensureSpace(16);
+    page.drawText(title, { x: MARGIN, y: cursorY, size: 9, font: boldFont, color: MUTED });
+    cursorY -= 13;
   };
 
   // Draw a single field card at an exact position. Returns height used.
@@ -538,9 +539,9 @@ export const generateParishRegistrationPdf = async (value) => {
     const subtitleHeight = group.subtitle ? META_SIZE + 6 : 0;
     const checkRowHeight = 16;
     const baptismDateFieldHeight = CELL_PADDING_Y * 2 + LABEL_SIZE + 4 + LINE_GAP;
-    const topBlockHeight = checkRowHeight + 6 + baptismDateFieldHeight + 6;
+    const topBlockHeight = checkRowHeight + 4 + baptismDateFieldHeight + 4;
     const sacramentItemHeight = 16 + 4 + (CELL_PADDING_Y * 2 + LABEL_SIZE + 4 + LINE_GAP);
-    const sacramentGridHeight = sacramentItemHeight + 8;
+    const sacramentGridHeight = sacramentItemHeight + 4;
     const totalCardHeight =
       GROUP_CARD_PADDING * 2 + titleHeight + subtitleHeight + topBlockHeight + sacramentGridHeight;
 
@@ -576,10 +577,10 @@ export const generateParishRegistrationPdf = async (value) => {
 
     drawCheckboxOn(pageTarget, cbX2, innerY, isYes(group.isCatholic));
     pageTarget.drawText('Catholic?', { x: cbX2 + 14, y: innerY - 9, size: VALUE_SIZE, font: regularFont, color: TEXT });
-    innerY -= checkRowHeight + 6;
+    innerY -= checkRowHeight + 4;
 
     drawFieldCardOn(pageTarget, startX + GROUP_CARD_PADDING, innerY, innerWidth, 'Baptism Date', group.baptism.date);
-    innerY -= baptismDateFieldHeight + 6;
+    innerY -= baptismDateFieldHeight + 4;
 
     const sacColWidth = (innerWidth - COLUMN_GAP * 2) / 3;
 

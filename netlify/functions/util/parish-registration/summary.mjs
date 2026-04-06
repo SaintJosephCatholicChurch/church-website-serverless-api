@@ -36,14 +36,14 @@ const GROUP_BG = '#fdfafa';
 const SECTION_UNDERLINE = 'rgba(191,48,60,0.25)';
 
 const buildFieldCard = (label, value, width = '50%') => `
-  <td style="width:${width}; vertical-align:top; padding:0 4px 8px 4px;">
+  <td style="width:${width}; vertical-align:top; padding:0 4px 6px 4px;">
     <table role="presentation" style="width:100%; border-collapse:collapse; border:1px solid ${FIELD_BORDER}; background:#fff;">
       <tr>
-        <td style="padding:8px 12px; font-family:Arial, Helvetica, sans-serif;">
-          <div style="font-size:10px; font-weight:700; letter-spacing:0.05em; text-transform:uppercase; color:${MUTED_COLOR};">
+        <td style="padding:6px 10px; font-family:Arial, Helvetica, sans-serif;">
+          <div style="font-size:9px; font-weight:700; letter-spacing:0.05em; text-transform:uppercase; color:${MUTED_COLOR};">
             ${escapeHtml(label)}
           </div>
-          <div style="padding-top:4px; font-size:14px; line-height:1.45; color:${TEXT_COLOR}; white-space:pre-line;">
+          <div style="padding-top:3px; font-size:13px; line-height:1.4; color:${TEXT_COLOR}; white-space:pre-line;">
             ${escapeHtml(formatValue(value))}
           </div>
         </td>
@@ -79,7 +79,7 @@ const buildFieldGrid = (rows) => {
   }
 
   return `
-    <table role="presentation" style="width:100%; border-collapse:collapse; margin:0 -4px;">
+    <table role="presentation" style="width:100%; border-collapse:collapse;">
       ${layoutRows
         .map((row) => {
           const cells = row.map((field) => buildFieldCard(field.label, field.value, field.width)).join('');
@@ -104,32 +104,32 @@ const buildCheckboxHtml = (label, checked) => {
 };
 
 const buildSacramentGroup = (title, subtitle, baptism, isCatholic, sacramentList) => `
-  <div style="padding:14px; border:1px solid ${GROUP_BORDER}; background:${GROUP_BG}; margin-bottom:10px;">
-    <div style="font-size:11px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; color:${BRAND_DARK}; padding-bottom:4px;">
+  <div style="padding:10px; border:1px solid ${GROUP_BORDER}; background:${GROUP_BG}; margin-bottom:6px;">
+    <div style="font-size:10px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; color:${BRAND_DARK}; padding-bottom:4px;">
       ${escapeHtml(title)}
     </div>
-    ${subtitle ? `<div style="font-size:12px; line-height:1.4; font-style:italic; color:#666; padding-bottom:10px;">${escapeHtml(subtitle)}</div>` : ''}
-    <table role="presentation" style="width:100%; border-collapse:collapse; padding-bottom:8px;">
+    ${subtitle ? `<div style="font-size:11px; line-height:1.4; font-style:italic; color:#666; padding-bottom:8px;">${escapeHtml(subtitle)}</div>` : ''}
+    <table role="presentation" style="width:100%; border-collapse:collapse; padding-bottom:6px;">
       <tr>
-        <td style="width:50%; padding:6px 0;">${buildCheckboxHtml('Baptized?', isYes(baptism.received))}</td>
-        <td style="width:50%; padding:6px 0;">${buildCheckboxHtml('Catholic?', isYes(isCatholic))}</td>
+        <td style="width:50%; padding:4px 0;">${buildCheckboxHtml('Baptized?', isYes(baptism.received))}</td>
+        <td style="width:50%; padding:4px 0;">${buildCheckboxHtml('Catholic?', isYes(isCatholic))}</td>
       </tr>
     </table>
-    <table role="presentation" style="width:100%; border-collapse:collapse; margin:0 -4px;">
+    <table role="presentation" style="width:100%; border-collapse:collapse;">
       <tr>${buildFieldCard('Baptism Date', baptism.date, '100%')}</tr>
     </table>
-    <table role="presentation" style="width:100%; border-collapse:collapse; margin:4px -4px 0 -4px;">
+    <table role="presentation" style="width:100%; border-collapse:collapse; margin-top:4px;">
       <tr>
         ${sacramentList
           .map(
             (sac) => `
-          <td style="width:33.33%; vertical-align:top; padding:0 4px;">
-            <div style="padding:6px 0;">${buildCheckboxHtml(`${sac.name}?`, isYes(sac.data.received))}</div>
+          <td style="width:33.33%; vertical-align:top; padding:0 4px 0 0;">
+            <div style="padding:4px 0;">${buildCheckboxHtml(`${sac.name}?`, isYes(sac.data.received))}</div>
             <table role="presentation" style="width:100%; border-collapse:collapse; border:1px solid ${FIELD_BORDER}; background:#fff;">
               <tr>
-                <td style="padding:8px 10px; font-family:Arial, Helvetica, sans-serif;">
-                  <div style="font-size:10px; font-weight:700; letter-spacing:0.05em; text-transform:uppercase; color:${MUTED_COLOR};">${escapeHtml(sac.name)} DATE</div>
-                  <div style="padding-top:4px; font-size:14px; line-height:1.45; color:${TEXT_COLOR};">${escapeHtml(formatValue(sac.data.date))}</div>
+                <td style="padding:6px 10px; font-family:Arial, Helvetica, sans-serif;">
+                  <div style="font-size:9px; font-weight:700; letter-spacing:0.05em; text-transform:uppercase; color:${MUTED_COLOR};">${escapeHtml(sac.name)} DATE</div>
+                  <div style="padding-top:3px; font-size:13px; line-height:1.4; color:${TEXT_COLOR};">${escapeHtml(formatValue(sac.data.date))}</div>
                 </td>
               </tr>
             </table>
@@ -152,12 +152,12 @@ export const buildAttachmentFileName = (value) => {
 
 const buildGroup = (title, rows, options = {}) => {
   const subtitleMarkup = options.subtitle
-    ? `<div style="font-size:12px; line-height:1.4; font-style:italic; color:#666; padding-bottom:8px; margin-top:-2px;">${escapeHtml(options.subtitle)}</div>`
+    ? `<div style="font-size:11px; line-height:1.4; font-style:italic; color:#666; padding-bottom:6px; margin-top:-2px;">${escapeHtml(options.subtitle)}</div>`
     : '';
 
   return `
-    <div style="padding:14px; border:1px solid ${GROUP_BORDER}; background:${GROUP_BG}; margin-bottom:10px;">
-      ${title ? `<div style="font-size:11px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; color:${BRAND_DARK}; padding-bottom:8px;">${escapeHtml(title)}</div>` : ''}
+    <div style="padding:10px; border:1px solid ${GROUP_BORDER}; background:${GROUP_BG}; margin-bottom:6px;">
+      ${title ? `<div style="font-size:10px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; color:${BRAND_DARK}; padding-bottom:6px;">${escapeHtml(title)}</div>` : ''}
       ${subtitleMarkup}
       ${buildFieldGrid(rows)}
     </div>
@@ -165,8 +165,8 @@ const buildGroup = (title, rows, options = {}) => {
 };
 
 const buildSection = (title, content) => `
-  <div style="padding-top:20px;">
-    <div style="font-family:Arial, Helvetica, sans-serif; font-size:16px; font-weight:700; text-transform:uppercase; letter-spacing:0.04em; color:${BRAND_RED}; border-bottom:2px solid ${SECTION_UNDERLINE}; padding-bottom:6px; margin-bottom:12px;">
+  <div style="padding-top:14px;">
+    <div style="font-family:Arial, Helvetica, sans-serif; font-size:14px; font-weight:700; text-transform:uppercase; letter-spacing:0.04em; color:${BRAND_RED}; border-bottom:2px solid ${SECTION_UNDERLINE}; padding-bottom:5px; margin-bottom:8px;">
       ${escapeHtml(title)}
     </div>
     ${content}
