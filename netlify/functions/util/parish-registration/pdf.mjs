@@ -18,7 +18,8 @@ const SECTION_TOP_GAP = 10;
 const MEMBER_LABEL_GAP = 3;
 const MEMBER_SECTION_TOP_GAP = 8;
 const CHILD_LABEL_TOP_GAP = 6;
-const CHILD_LABEL_TOP_GAP_AFTER_FIRST = 10;
+const CHILD_LABEL_TOP_GAP_AFTER_FIRST = 12;
+const CHILD_LABEL_BOTTOM_GAP = 1;
 
 // Brand colors
 const BRAND_RED = rgb(0.749, 0.188, 0.235);
@@ -368,13 +369,15 @@ export const generateParishRegistrationPdf = async (value) => {
     return height;
   };
 
-  const drawMemberLabel = (label, x = MARGIN, y = cursorY) => {
+  const drawMemberLabel = (label, x = MARGIN, y = cursorY, options = {}) => {
+    const { size = META_SIZE, color = MUTED } = options;
+
     page.drawText(label.toUpperCase(), {
       x,
       y,
-      size: META_SIZE,
+      size,
       font: boldFont,
-      color: MUTED,
+      color,
     });
   };
 
@@ -649,15 +652,26 @@ export const generateParishRegistrationPdf = async (value) => {
 
     const measureChild = (child) => {
       const fieldsH = measureFieldGridHeight(buildChildFields(child), CONTENT_WIDTH, regularFont, 5);
-      return CHILD_LABEL_TOP_GAP + MEMBER_LABEL_GAP + META_SIZE + 2 + fieldsH + SECTION_GAP + childSacramentRowHeight();
+      return (
+        CHILD_LABEL_TOP_GAP_AFTER_FIRST +
+        MEMBER_LABEL_GAP +
+        SECTION_SIZE +
+        CHILD_LABEL_BOTTOM_GAP +
+        fieldsH +
+        SECTION_GAP +
+        childSacramentRowHeight()
+      );
     };
 
     value.children.forEach((child, index) => {
       ensureSpace(measureChild(child));
 
       cursorY -= index === 0 ? CHILD_LABEL_TOP_GAP : CHILD_LABEL_TOP_GAP_AFTER_FIRST;
-      drawMemberLabel(`Dependent / Child ${index + 1}`, MARGIN, cursorY - MEMBER_LABEL_GAP);
-      cursorY -= MEMBER_LABEL_GAP + META_SIZE + 2;
+      drawMemberLabel(`Dependent / Child ${index + 1}`, MARGIN, cursorY - MEMBER_LABEL_GAP, {
+        size: SECTION_SIZE,
+        color: BRAND_DARK,
+      });
+      cursorY -= MEMBER_LABEL_GAP + SECTION_SIZE + CHILD_LABEL_BOTTOM_GAP;
 
       drawFieldGrid(buildChildFields(child), MARGIN, CONTENT_WIDTH, 5);
 
