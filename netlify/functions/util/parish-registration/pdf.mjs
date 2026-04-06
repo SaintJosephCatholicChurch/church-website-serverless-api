@@ -20,6 +20,7 @@ const MEMBER_SECTION_TOP_GAP = 8;
 const CHILD_LABEL_TOP_GAP = 6;
 const CHILD_LABEL_TOP_GAP_AFTER_FIRST = 14;
 const CHILD_LABEL_BOTTOM_GAP = -1;
+const HEADER_TOP_ROW_OFFSET = 3;
 
 // Brand colors
 const BRAND_RED = rgb(0.749, 0.188, 0.235);
@@ -272,7 +273,7 @@ export const generateParishRegistrationPdf = async (value) => {
     // Row 1: church name (left) + form title (right)
     page.drawText('St. Joseph Catholic Church', {
       x: MARGIN,
-      y: cursorY,
+      y: cursorY - HEADER_TOP_ROW_OFFSET,
       size: TITLE_SIZE,
       font: boldFont,
       color: BLACK,
@@ -281,7 +282,7 @@ export const generateParishRegistrationPdf = async (value) => {
     const regLabelW = regularFont.widthOfTextAtSize(regLabel, SECTION_SIZE);
     page.drawText(regLabel, {
       x: pageWidth - MARGIN - regLabelW,
-      y: cursorY,
+      y: cursorY - HEADER_TOP_ROW_OFFSET,
       size: SECTION_SIZE,
       font: regularFont,
       color: BRAND_RED,
