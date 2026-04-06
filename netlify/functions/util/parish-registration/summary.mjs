@@ -18,20 +18,32 @@ const formatBooleanChoice = (value) => {
   return '';
 };
 
+const isYes = (value) => value === true || value === 'yes';
+
 const formatValue = (value) => {
   const normalized = String(value ?? '').trim();
   return normalized === '' ? '—' : normalized;
 };
 
+// --- Email styling constants ---
+const BRAND_RED = '#bf303c';
+const BRAND_DARK = '#822129';
+const TEXT_COLOR = '#202020';
+const MUTED_COLOR = '#5c5c5c';
+const FIELD_BORDER = '#d5d5d5';
+const GROUP_BORDER = '#e3c7c9'; // subtle red tint matching rgba(191,48,60,0.14)
+const GROUP_BG = '#fdfafa';
+const SECTION_UNDERLINE = 'rgba(191,48,60,0.25)';
+
 const buildFieldCard = (label, value, width = '50%') => `
-  <td style="width:${width}; vertical-align:top; padding:0 6px 12px 6px;">
-    <table role="presentation" style="width:100%; border-collapse:collapse; border:1px solid #d5d5d5;">
+  <td style="width:${width}; vertical-align:top; padding:0 4px 8px 4px;">
+    <table role="presentation" style="width:100%; border-collapse:collapse; border:1px solid ${FIELD_BORDER}; background:#fff;">
       <tr>
-        <td style="padding:10px 12px; font-family:Arial, Helvetica, sans-serif;">
-          <div style="font-size:11px; font-weight:700; letter-spacing:0.04em; text-transform:uppercase; color:#5c5c5c;">
+        <td style="padding:8px 12px; font-family:Arial, Helvetica, sans-serif;">
+          <div style="font-size:10px; font-weight:700; letter-spacing:0.05em; text-transform:uppercase; color:${MUTED_COLOR};">
             ${escapeHtml(label)}
           </div>
-          <div style="padding-top:5px; font-size:14px; line-height:1.45; color:#202020; white-space:pre-line;">
+          <div style="padding-top:4px; font-size:14px; line-height:1.45; color:${TEXT_COLOR}; white-space:pre-line;">
             ${escapeHtml(formatValue(value))}
           </div>
         </td>
@@ -40,33 +52,90 @@ const buildFieldCard = (label, value, width = '50%') => `
   </td>
 `;
 
-const buildFieldGrid = (rows, columns = 2) => {
-  if (columns === 1) {
-    return `
-      <table role="presentation" style="width:100%; border-collapse:collapse; margin:0 -6px;">
-        ${rows.map(([label, value]) => `<tr>${buildFieldCard(label, value, '100%')}</tr>`).join('')}
-      </table>
-    `;
+const buildFieldGrid = (rows) => {
+  const layoutRows = [];
+  let currentRow = [];
+
+  for (const field of rows) {
+    if (field.wide) {
+      if (currentRow.length > 0) {
+        layoutRows.push(currentRow);
+        currentRow = [];
+      }
+
+      layoutRows.push([{ ...field, width: '100%' }]);
+    } else {
+      currentRow.push({ ...field, width: '50%' });
+
+      if (currentRow.length === 2) {
+        layoutRows.push(currentRow);
+        currentRow = [];
+      }
+    }
   }
 
-  const chunks = [];
-
-  for (let index = 0; index < rows.length; index += 2) {
-    chunks.push(rows.slice(index, index + 2));
+  if (currentRow.length > 0) {
+    layoutRows.push(currentRow);
   }
 
   return `
-    <table role="presentation" style="width:100%; border-collapse:collapse; margin:0 -6px;">
-      ${chunks
-        .map((chunk) => {
-          const cells = chunk.map(([label, value]) => buildFieldCard(label, value)).join('');
-          const filler = chunk.length === 1 ? '<td style="width:50%; padding:0 6px 12px 6px;"></td>' : '';
+    <table role="presentation" style="width:100%; border-collapse:collapse; margin:0 -4px;">
+      ${layoutRows
+        .map((row) => {
+          const cells = row.map((field) => buildFieldCard(field.label, field.value, field.width)).join('');
+          const filler = row.length === 1 && row[0].width === '50%' ? '<td style="width:50%; padding:0 4px 8px 4px;"></td>' : '';
           return `<tr>${cells}${filler}</tr>`;
         })
         .join('')}
     </table>
   `;
 };
+
+const buildCheckboxHtml = (label, checked) => {
+  const boxStyle = checked
+    ? 'display:inline-block; width:14px; height:14px; border:1.5px solid #2e9e47; background:#edfaef; vertical-align:middle; text-align:center; font-size:11px; line-height:14px; color:#2e9e47; font-weight:bold;'
+    : 'display:inline-block; width:14px; height:14px; border:1.5px solid #bbb; background:#fff; vertical-align:middle;';
+
+  return `
+    <span style="${boxStyle}">${checked ? '✓' : ''}</span>
+    <span style="vertical-align:middle; padding-left:6px; font-size:14px; color:${TEXT_COLOR};">${escapeHtml(label)}</span>
+  `;
+};
+
+const buildSacramentGroup = (title, subtitle, baptism, isCatholic, sacramentList) => `
+  <div style="padding:14px; border:1px solid ${GROUP_BORDER}; background:${GROUP_BG}; margin-bottom:10px;">
+    <div style="font-size:11px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; color:${BRAND_DARK}; padding-bottom:4px;">
+      ${escapeHtml(title)}
+    </div>
+    ${subtitle ? `<div style="font-size:12px; line-height:1.4; font-style:italic; color:#666; padding-bottom:10px;">${escapeHtml(subtitle)}</div>` : ''}
+    <table role="presentation" style="width:100%; border-collapse:collapse; padding-bottom:8px;">
+      <tr>
+        <td style="width:50%; padding:6px 0;">${buildCheckboxHtml('Baptized?', isYes(baptism.received))}</td>
+        <td style="width:50%; padding:6px 0;">${buildCheckboxHtml('Catholic?', isYes(isCatholic))}</td>
+      </tr>
+    </table>
+    <table role="presentation" style="width:100%; border-collapse:collapse; margin:0 -4px;">
+      <tr>${buildFieldCard('Baptism Date', baptism.date, '100%')}</tr>
+    </table>
+    <table role="presentation" style="width:100%; border-collapse:collapse; margin:4px -4px 0 -4px;">
+      <tr>
+        ${sacramentList.map((sac) => `
+          <td style="width:33.33%; vertical-align:top; padding:0 4px;">
+            <div style="padding:6px 0;">${buildCheckboxHtml(`${sac.name}?`, isYes(sac.data.received))}</div>
+            <table role="presentation" style="width:100%; border-collapse:collapse; border:1px solid ${FIELD_BORDER}; background:#fff;">
+              <tr>
+                <td style="padding:8px 10px; font-family:Arial, Helvetica, sans-serif;">
+                  <div style="font-size:10px; font-weight:700; letter-spacing:0.05em; text-transform:uppercase; color:${MUTED_COLOR};">${escapeHtml(sac.name)} DATE</div>
+                  <div style="padding-top:4px; font-size:14px; line-height:1.45; color:${TEXT_COLOR};">${escapeHtml(formatValue(sac.data.date))}</div>
+                </td>
+              </tr>
+            </table>
+          </td>
+        `).join('')}
+      </tr>
+    </table>
+  </div>
+`;
 
 export const buildAttachmentFileName = (value) => {
   const lastName =
@@ -78,23 +147,21 @@ export const buildAttachmentFileName = (value) => {
 
 const buildGroup = (title, rows, options = {}) => {
   const subtitleMarkup = options.subtitle
-    ? `<div style="padding:2px 0 10px 0; font-size:13px; line-height:1.4; font-style:italic; color:#666666;">${escapeHtml(options.subtitle)}</div>`
+    ? `<div style="font-size:12px; line-height:1.4; font-style:italic; color:#666; padding-bottom:8px; margin-top:-2px;">${escapeHtml(options.subtitle)}</div>`
     : '';
 
   return `
-    <div style="padding-top:10px;">
-      <div style="font-family:Georgia, 'Times New Roman', serif; font-size:18px; font-weight:700; color:#202020;">
-        ${escapeHtml(title)}
-      </div>
+    <div style="padding:14px; border:1px solid ${GROUP_BORDER}; background:${GROUP_BG}; margin-bottom:10px;">
+      ${title ? `<div style="font-size:11px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; color:${BRAND_DARK}; padding-bottom:8px;">${escapeHtml(title)}</div>` : ''}
       ${subtitleMarkup}
-      ${buildFieldGrid(rows, options.columns)}
+      ${buildFieldGrid(rows)}
     </div>
   `;
 };
 
 const buildSection = (title, content) => `
-  <div style="padding-top:22px;">
-    <div style="font-family:Georgia, 'Times New Roman', serif; font-size:24px; font-weight:700; color:#141414; border-bottom:1px solid #d9d9d9; padding-bottom:8px; margin-bottom:6px;">
+  <div style="padding-top:20px;">
+    <div style="font-family:Arial, Helvetica, sans-serif; font-size:16px; font-weight:700; text-transform:uppercase; letter-spacing:0.04em; color:${BRAND_RED}; border-bottom:2px solid ${SECTION_UNDERLINE}; padding-bottom:6px; margin-bottom:12px;">
       ${escapeHtml(title)}
     </div>
     ${content}
@@ -106,25 +173,22 @@ const buildFamilySection = (value) =>
     'Family Information',
     [
       buildGroup('Household Details', [
-        ['Registration Date', value.family.registrationDate],
-        ['Env#', value.family.envelopeNumber],
-        ['Last Name', value.family.lastName],
-        ['First Name(s)', value.family.firstNames],
-        ['Mailing Name', value.family.mailingName],
+        { label: 'Last Name', value: value.family.lastName },
+        { label: 'First Name(s)', value: value.family.firstNames },
+        { label: 'Mailing Name', value: value.family.mailingName, wide: true },
       ]),
-      buildGroup(
-        'Address',
-        [
-          ['Address', value.family.address],
-          ['Address Line 2', value.family.addressLine2],
-          ['City / State / Zip', [value.family.city, value.family.state, value.family.zip].filter(Boolean).join(', ')],
-        ],
-        { columns: 1 },
-      ),
+      buildGroup('Address', [
+        { label: 'Address', value: value.family.address, wide: true },
+        { label: 'Address Line 2', value: value.family.addressLine2, wide: true },
+        { label: 'City', value: value.family.city },
+        { label: 'State', value: value.family.state },
+        { label: 'Zip', value: value.family.zip },
+      ]),
       buildGroup('Contact Details', [
-        ['Home Phone', value.family.homePhone],
-        ['Emergency Phone', value.family.emergencyPhone],
-        ['Family Email', value.family.familyEmail],
+        { label: 'Home Phone', value: value.family.homePhone },
+        { label: 'Emergency Phone', value: value.family.emergencyPhone },
+        { label: 'Family Email', value: value.family.familyEmail },
+        { label: 'Env#', value: value.family.envelopeNumber },
       ]),
     ].join(''),
   );
@@ -134,37 +198,33 @@ const buildAdultSection = (adult, index) =>
     `Adult Member ${index + 1}`,
     [
       buildGroup('Basic Information', [
-        ['Parish Status', adult.parishStatus],
-        ['Role', adult.role],
-        ['First Name', adult.firstName],
-        ['Nickname', adult.nickname],
-        ['Gender', adult.gender],
-        ['Maiden Name', adult.maidenName],
+        { label: 'Parish Status', value: adult.parishStatus },
+        { label: 'Role', value: adult.role },
+        { label: 'First Name', value: adult.firstName },
+        { label: 'Nickname', value: adult.nickname },
+        { label: 'Gender', value: adult.gender },
+        { label: 'Maiden Name', value: adult.maidenName },
       ]),
       buildGroup('Contact And Background', [
-        ['Date of Birth', adult.dateOfBirth],
-        ['Birthplace', adult.birthplace],
-        ['Email', adult.email],
-        ['First Language', adult.firstLanguage],
-        ['Work Phone', adult.workPhone],
-        ['Cell Phone', adult.cellPhone],
-        ['Occupation', adult.occupation],
-        ['Employer', adult.employer],
+        { label: 'Date of Birth', value: adult.dateOfBirth },
+        { label: 'Birthplace', value: adult.birthplace },
+        { label: 'Email', value: adult.email, wide: true },
+        { label: 'Work Phone', value: adult.workPhone },
+        { label: 'Cell Phone', value: adult.cellPhone },
+        { label: 'First Language', value: adult.firstLanguage },
+        { label: 'Occupation', value: adult.occupation },
+        { label: 'Employer', value: adult.employer },
       ]),
-      buildGroup(
+      buildSacramentGroup(
         'Sacramental Information',
+        'Check if sacrament received. Add date if known.',
+        adult.sacraments.baptism,
+        adult.isCatholic,
         [
-          ['Baptized?', formatBooleanChoice(adult.sacraments.baptism.received)],
-          ['Catholic?', formatBooleanChoice(adult.isCatholic)],
-          ['Baptism Date', adult.sacraments.baptism.date],
-          ['Reconciliation?', formatBooleanChoice(adult.sacraments.reconciliation.received)],
-          ['Reconciliation Date', adult.sacraments.reconciliation.date],
-          ['First Eucharist?', formatBooleanChoice(adult.sacraments.eucharist.received)],
-          ['First Eucharist Date', adult.sacraments.eucharist.date],
-          ['Confirmed?', formatBooleanChoice(adult.sacraments.confirmation.received)],
-          ['Confirmation Date', adult.sacraments.confirmation.date],
+          { name: 'Reconciliation', data: adult.sacraments.reconciliation },
+          { name: 'First Eucharist', data: adult.sacraments.eucharist },
+          { name: 'Confirmation', data: adult.sacraments.confirmation },
         ],
-        { subtitle: 'Check if sacrament received. Add date if known.' },
       ),
     ].join(''),
   );
@@ -172,33 +232,30 @@ const buildAdultSection = (adult, index) =>
 const buildMarriageSection = (value) =>
   buildSection(
     'Marriage Information',
-    buildGroup('Shared Marriage Details', [
-      ['Marital Status', value.marriage?.maritalStatus ?? ''],
-      ['Valid Catholic Marriage?', formatBooleanChoice(value.marriage?.validCatholicMarriage)],
+    buildGroup(null, [
+      { label: 'Marital Status', value: value.marriage?.maritalStatus ?? '' },
+      { label: 'Valid Catholic Marriage?', value: formatBooleanChoice(value.marriage?.validCatholicMarriage) },
     ]),
   );
 
 const buildAdditionalSection = (value) =>
   buildSection(
     'Additional Information',
-    buildGroup(
-      'Pastoral Care',
-      [
-        [
-          'Would any household member like to be visited by a priest?',
-          formatBooleanChoice(value.additional.priestVisitRequested),
-        ],
-        ['Priest Visit Details', value.additional.priestVisitDetails],
-      ],
-      { columns: 1 },
-    ),
+    buildGroup('Pastoral Care', [
+      {
+        label: 'Would any household member like to be visited by a priest?',
+        value: formatBooleanChoice(value.additional.priestVisitRequested),
+        wide: true,
+      },
+      { label: 'Priest Visit Details', value: value.additional.priestVisitDetails, wide: true },
+    ]),
   );
 
 const buildChildrenSection = (value) => {
   if (value.children.length === 0) {
     return buildSection(
       'Children / Dependents',
-      buildGroup('Household Children', [['Status', 'No children or dependents listed.']], { columns: 1 }),
+      `<div style="padding:14px; border:1px solid ${GROUP_BORDER}; background:${GROUP_BG}; font-size:14px; font-style:italic; color:#666;">No children or dependents listed.</div>`,
     );
   }
 
@@ -206,33 +263,35 @@ const buildChildrenSection = (value) => {
     'Children / Dependents',
     value.children
       .map(
-        (child, index) =>
-          buildGroup(`Child / Dependent ${index + 1} · Basic Information`, [
-            ['Relationship To Head of Household', child.relationshipToHeadOfHousehold],
-            ['First Name', child.firstName],
-            ['Last Name', child.lastName],
-            ['Gender', child.gender],
-            ['Birthdate', child.birthdate],
-            ['Birthplace', child.birthplace],
-            ['School', child.school],
-            ['H.S. Grad Yr', child.highSchoolGraduationYear],
-            ['First Language', child.firstLanguage],
-            ['Catholic?', formatBooleanChoice(child.isCatholic)],
-          ]) +
-          buildGroup(
-            `Child / Dependent ${index + 1} · Sacramental Information`,
+        (child, index) => `
+          <div style="font-size:13px; font-weight:700; color:${MUTED_COLOR}; padding:${index > 0 ? '16px' : '0'} 0 8px 0;">
+            ${escapeHtml(`Child / Dependent ${index + 1}`)}
+          </div>
+          ${buildGroup('Basic Information', [
+            { label: 'Relationship To Head of Household', value: child.relationshipToHeadOfHousehold, wide: true },
+            { label: 'First Name', value: child.firstName },
+            { label: 'Last Name', value: child.lastName },
+            { label: 'Gender', value: child.gender },
+            { label: 'Birthdate', value: child.birthdate },
+            { label: 'Birthplace', value: child.birthplace },
+          ])}
+          ${buildGroup('School And Background', [
+            { label: 'School', value: child.school },
+            { label: 'H.S. Grad Yr', value: child.highSchoolGraduationYear },
+            { label: 'First Language', value: child.firstLanguage },
+          ])}
+          ${buildSacramentGroup(
+            'Sacramental Information',
+            'Check if sacrament received. Add date if known.',
+            child.sacraments.baptism,
+            child.isCatholic,
             [
-              ['Baptized?', formatBooleanChoice(child.sacraments.baptism.received)],
-              ['Baptism Date', child.sacraments.baptism.date],
-              ['Reconciliation?', formatBooleanChoice(child.sacraments.reconciliation.received)],
-              ['Reconciliation Date', child.sacraments.reconciliation.date],
-              ['First Eucharist?', formatBooleanChoice(child.sacraments.eucharist.received)],
-              ['First Eucharist Date', child.sacraments.eucharist.date],
-              ['Confirmed?', formatBooleanChoice(child.sacraments.confirmation.received)],
-              ['Confirmation Date', child.sacraments.confirmation.date],
+              { name: 'Reconciliation', data: child.sacraments.reconciliation },
+              { name: 'First Eucharist', data: child.sacraments.eucharist },
+              { name: 'Confirmation', data: child.sacraments.confirmation },
             ],
-            { subtitle: 'Check if sacrament received. Add date if known.' },
-          ),
+          )}
+        `,
       )
       .join(''),
   );
@@ -260,21 +319,27 @@ export const buildParishRegistrationSummaryText = (value) => {
 };
 
 export const buildParishRegistrationSummaryHtml = (value) => `
-  <div style="margin:0; padding:24px 0; font-family:Arial, Helvetica, sans-serif; color:#202020; background:none;">
-    <div style="max-width:820px; margin:0 auto; border:1px solid #d9d9d9; padding:28px 28px 32px 28px;">
-      <div style="font-family:Georgia, 'Times New Roman', serif; font-size:32px; font-weight:700; line-height:1.2; color:#141414;">
-        New Parish Registration Submission
-      </div>
-      <div style="padding-top:8px; font-size:14px; line-height:1.6; color:#5f5f5f;">
-        St. Joseph Catholic Church Parish Registration<br />
-        Submitted on ${escapeHtml(formatValue(value.family.registrationDate))}
-      </div>
+  <div style="margin:0; padding:24px 0; font-family:Arial, Helvetica, sans-serif; color:${TEXT_COLOR}; background:#f5f5f5;">
+    <div style="max-width:820px; margin:0 auto; border:1px solid #d9d9d9; background:#fff;">
+      <div style="height:4px; background:${BRAND_RED};"></div>
+      <div style="padding:28px 28px 32px 28px;">
+        <div style="font-family:Arial, Helvetica, sans-serif; font-size:22px; font-weight:700; line-height:1.2; color:${TEXT_COLOR};">
+          St. Joseph Catholic Church
+        </div>
+        <div style="padding-top:2px; font-size:15px; color:${BRAND_RED}; letter-spacing:0.02em;">
+          Parish Registration Form
+        </div>
+        <div style="padding-top:8px; font-size:13px; line-height:1.6; color:${MUTED_COLOR};">
+          1300 N. Main St., Bluffton, IN 46714 · (260) 824-1380<br />
+          Submitted on ${escapeHtml(formatValue(value.family.registrationDate))}
+        </div>
 
-      ${buildFamilySection(value)}
-      ${value.adults.map((adult, index) => buildAdultSection(adult, index)).join('')}
-      ${buildMarriageSection(value)}
-      ${buildAdditionalSection(value)}
-      ${buildChildrenSection(value)}
+        ${buildFamilySection(value)}
+        ${value.adults.map((adult, index) => buildAdultSection(adult, index)).join('')}
+        ${buildMarriageSection(value)}
+        ${buildAdditionalSection(value)}
+        ${buildChildrenSection(value)}
+      </div>
     </div>
   </div>
 `;
