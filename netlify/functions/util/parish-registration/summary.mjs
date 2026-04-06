@@ -51,11 +51,11 @@ const buildFieldCard = (label, value, width = '50%') => `
   <td style="width:${width}; vertical-align:top; padding:0 4px 8px 4px;">
     <table role="presentation" style="width:100%; border-collapse:collapse; table-layout:fixed;">
       <tr>
-        <td style="padding:4px 8px; font-family:Arial, Helvetica, sans-serif;">
-          <div style="font-size:9px; font-weight:700; letter-spacing:0.05em; text-transform:uppercase; color:${MUTED_COLOR}; padding:0 0 2px 0;">
+        <td style="padding:3px 6px; font-family:Arial, Helvetica, sans-serif;">
+          <div style="font-size:9px; font-weight:700; letter-spacing:0.05em; text-transform:uppercase; color:${MUTED_COLOR}; padding:0 0 1px 0;">
             ${escapeHtml(label)}
           </div>
-          <div style="padding:3px 7px 4px 7px; font-size:13px; line-height:1.4; color:${TEXT_COLOR}; white-space:pre-line; overflow-wrap:anywhere; background:${FIELD_FILL};">
+          <div style="padding:1px 6px 2px 6px; font-size:13px; line-height:1.35; color:${TEXT_COLOR}; white-space:pre-line; overflow-wrap:anywhere; background:${FIELD_FILL};">
             ${escapeHtml(formatValue(value))}
           </div>
         </td>
@@ -220,10 +220,18 @@ const buildAdultsSection = (value) =>
   );
 
 const buildMarriageRow = (value) =>
-  buildFieldGrid([
-    { label: 'Marital Status', value: formatTitleCase(value.marriage?.maritalStatus ?? '') },
-    { label: 'Catholic Marriage?', value: formatBooleanChoice(value.marriage?.validCatholicMarriage) },
-  ]);
+  `
+    <table role="presentation" style="width:100%; border-collapse:collapse; table-layout:fixed; margin-top:4px;">
+      <tr>
+        <td style="width:25%; vertical-align:top; padding:0 4px 8px 4px;">
+          ${buildFieldGrid([{ label: 'Marital Status', value: formatTitleCase(value.marriage?.maritalStatus ?? ''), wide: true }])}
+        </td>
+        <td style="vertical-align:middle; padding:0 4px 8px 12px;">
+          <div style="padding:8px 0 0 0;">${buildCheckboxHtml('Valid Catholic Marriage?', isYes(value.marriage?.validCatholicMarriage))}</div>
+        </td>
+      </tr>
+    </table>
+  `;
 
 const buildPriestVisitRow = (value) => `
   <table role="presentation" style="width:100%; border-collapse:collapse; margin-top:2px;">

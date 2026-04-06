@@ -106,11 +106,6 @@ const buildFamilyAndMarriageFields = (value) => [
   { label: 'Env#', value: value.family.envelopeNumber },
 ];
 
-const buildMarriageFields = (value) => [
-  { label: 'Marital Status', value: formatTitleCase(value.marriage?.maritalStatus ?? '') },
-  { label: 'Catholic Marriage?', value: formatChoice(value.marriage?.validCatholicMarriage ?? '') },
-];
-
 const buildAdultFields = (adult) => [
   { label: 'Parish Status', value: formatTitleCase(adult.parishStatus) },
   { label: 'Role', value: adult.role },
@@ -502,6 +497,40 @@ export const generateParishRegistrationPdf = async (value) => {
     cursorY -= rowHeight + FIELD_ROW_GAP;
   };
 
+  const drawMarriageRow = () => {
+    const statusWidth = Math.floor(CONTENT_WIDTH * 0.25);
+    const checkboxX = MARGIN + statusWidth + COLUMN_GAP + 8;
+    const fieldHeight = measureFieldCardHeight(
+      formatTitleCase(value.marriage?.maritalStatus ?? ''),
+      statusWidth,
+      regularFont,
+    );
+    const rowHeight = Math.max(12, fieldHeight);
+
+    ensureSpace(rowHeight + FIELD_ROW_GAP);
+
+    drawFieldCardOn(
+      page,
+      MARGIN,
+      cursorY,
+      statusWidth,
+      'Marital Status',
+      formatTitleCase(value.marriage?.maritalStatus ?? ''),
+    );
+
+    const checkboxY = cursorY - Math.max(0, (rowHeight - 12) / 2);
+    drawCheckboxOn(page, checkboxX, checkboxY, isYes(value.marriage?.validCatholicMarriage));
+    page.drawText('Valid Catholic Marriage?', {
+      x: checkboxX + 13,
+      y: checkboxY - 7,
+      size: VALUE_SIZE,
+      font: regularFont,
+      color: TEXT,
+    });
+
+    cursorY -= rowHeight + FIELD_ROW_GAP;
+  };
+
   // Draw sacrament block at the given position. Returns ending Y (does NOT touch cursorY).
   const drawSacramentBlockAt = (pageTarget, sacData, startX, startY, blockWidth) => {
     const checkSize = 9;
@@ -612,8 +641,8 @@ export const generateParishRegistrationPdf = async (value) => {
   drawFieldGrid(buildFamilyAndMarriageFields(value), MARGIN, CONTENT_WIDTH, 3);
 
   drawAdultColumns(value.adults);
-  cursorY -= SECTION_GAP;
-  drawFieldGrid(buildMarriageFields(value), MARGIN, CONTENT_WIDTH, 2);
+  cursorY -= SECTION_GAP + 4;
+  drawMarriageRow();
   drawPriestVisitRow();
 
   if (value.children.length > 0) {
