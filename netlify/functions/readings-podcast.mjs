@@ -1,9 +1,8 @@
-import { readFileSync } from 'node:fs';
 import { generateResponse, logFunctionError } from './util/response.mjs';
 
 export const handler = async (event) => {
   try {
-    const storedData = JSON.parse(readFileSync(new URL('./data/readings-podcast.json', import.meta.url), 'utf8'));
+    const storedData = require('./data/readings-podcast.json');
     if (typeof storedData.url !== 'string' || storedData.url.trim() === '') {
       throw new Error('Stored readings podcast URL is empty.');
     }
