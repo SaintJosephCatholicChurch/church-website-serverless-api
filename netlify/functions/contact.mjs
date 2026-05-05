@@ -1,44 +1,45 @@
 import nodemailer from 'nodemailer';
-import { generateResponse } from './util/response.mjs';
+import { generateResponse, logFunctionError } from './util/response.mjs';
 
 export const handler = async (event) => {
   if (event.httpMethod !== 'POST') {
     return generateResponse(event, 501, 'Not implemented');
   }
 
-  const body = JSON.parse(event.body ?? '');
-  if (
-    !body.email ||
-    body.email === '' ||
-    !body.name ||
-    body.name === '' ||
-    !body.subject ||
-    body.subject === '' ||
-    !body.comment ||
-    body.comment === ''
-  ) {
-    return generateResponse(event, 400, 'Bad input');
-  }
+  try {
+    const body = JSON.parse(event.body ?? '');
+    if (
+      !body.email ||
+      body.email === '' ||
+      !body.name ||
+      body.name === '' ||
+      !body.subject ||
+      body.subject === '' ||
+      !body.comment ||
+      body.comment === ''
+    ) {
+      return generateResponse(event, 400, 'Bad input');
+    }
 
-  const transporter = nodemailer.createTransport({
-    host: 'smtp.gmail.com',
-    port: 465,
-    secure: true,
-    auth: {
-      user: process.env.GMAIL_USERNAME,
-      pass: process.env.GMAIL_PASSWORD,
-    },
-  });
+    const transporter = nodemailer.createTransport({
+      host: 'smtp.gmail.com',
+      port: 465,
+      secure: true,
+      auth: {
+        user: process.env.GMAIL_USERNAME,
+        pass: process.env.GMAIL_PASSWORD,
+      },
+    });
 
-  const info = await transporter.sendMail({
-    from: 'no-reply@stjosephchurchbluffton.org',
-    to: process.env.CONTACT_EMAIL,
-    replyTo: body.email,
-    subject: `New Contact Form Submission [${body.subject}]`,
-    list: {
-      unsubscribe: 'admin@stjosephchurchbluffton.org?subject=unsubscribe',
-    },
-    html: `<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+    const info = await transporter.sendMail({
+      from: 'no-reply@stjosephchurchbluffton.org',
+      to: process.env.CONTACT_EMAIL,
+      replyTo: body.email,
+      subject: `New Contact Form Submission [${body.subject}]`,
+      list: {
+        unsubscribe: 'admin@stjosephchurchbluffton.org?subject=unsubscribe',
+      },
+      html: `<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:o="urn:schemas-microsoft-com:office:office">
   <head>
   <meta charset="UTF-8">
@@ -208,11 +209,15 @@ span.MsoHyperlinkFollowed {
   </body>
 </html>
 `,
-  });
+    });
 
-  if (!info.messageId) {
-    return generateResponse(event, 500, 'Unable to send contact email');
+    if (!info.messageId) {
+      return generateResponse(event, 500, 'Unable to send contact email');
+    }
+
+    return generateResponse(event, 200, 'Contact email sent');
+  } catch (error) {
+    logFunctionError('contact', event, error);
+    return generateResponse(event, 500, 'Unable to process contact request');
   }
-
-  return generateResponse(event, 200, 'Contact email sent');
 };

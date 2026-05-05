@@ -1,6 +1,6 @@
 import fetch from 'node-fetch';
 import { format } from 'date-fns';
-import { generateResponse } from './util/response.mjs';
+import { generateResponse, logFunctionError } from './util/response.mjs';
 
 function getLectionaryYear(date = new Date()) {
   const liturgicalYear = getLiturgicalYear(date);
@@ -73,28 +73,33 @@ async function getPodcastUrl(event) {
 }
 
 export const handler = async (event) => {
-  const podcastUrl = await getPodcastUrl(event);
-  if (typeof podcastUrl !== 'string') {
-    return podcastUrl;
-  }
+  try {
+    const podcastUrl = await getPodcastUrl(event);
+    if (typeof podcastUrl !== 'string') {
+      return podcastUrl;
+    }
 
-  const response = await fetch(`https://bible.usccb.org${podcastUrl}`);
-  if (!response.ok) {
-    return generateResponse(event, 500, 'Failed to fetch podcast page');
-  }
+    const response = await fetch(`https://bible.usccb.org${podcastUrl}`);
+    if (!response.ok) {
+      return generateResponse(event, 500, 'Failed to fetch podcast page');
+    }
 
-  const text = await response.text();
-  const match =
-    /<iframe (?:[^>]+) (?:src=")(?:[^>]+url=)(https%3A\/\/api\.soundcloud\.com\/tracks[^&]+)(?:[^>]+)>/.exec(text);
-  if (!match || match.length !== 2) {
-    return generateResponse(event, 500, 'Failed to extract podcast soundcloud url');
-  }
+    const text = await response.text();
+    const match =
+      /<iframe (?:[^>]+) (?:src=")(?:[^>]+url=)(https%3A\/\/api\.soundcloud\.com\/tracks[^&]+)(?:[^>]+)>/.exec(text);
+    if (!match || match.length !== 2) {
+      return generateResponse(event, 500, 'Failed to extract podcast soundcloud url');
+    }
 
-  return generateResponse(
-    event,
-    200,
-    JSON.stringify({
-      url: match[1],
-    })
-  );
+    return generateResponse(
+      event,
+      200,
+      JSON.stringify({
+        url: match[1],
+      })
+    );
+  } catch (error) {
+    logFunctionError('readings-podcast', event, error);
+    return generateResponse(event, 500, 'Failed to fetch readings podcast');
+  }
 };

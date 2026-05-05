@@ -2,7 +2,7 @@ import { sendParishRegistrationEmail } from './util/parish-registration/email.mj
 import { generateParishRegistrationPdf } from './util/parish-registration/pdf.mjs';
 import { sanitizeParishRegistration } from './util/parish-registration/sanitize.mjs';
 import { validateParishRegistration } from './util/parish-registration/validate.mjs';
-import { generateJsonResponse } from './util/response.mjs';
+import { generateJsonResponse, logFunctionError } from './util/response.mjs';
 
 export const handler = async (event) => {
   if (event.httpMethod === 'OPTIONS') {
@@ -35,7 +35,9 @@ export const handler = async (event) => {
     const pdfBytes = await generateParishRegistrationPdf(sanitizedSubmission);
     await sendParishRegistrationEmail(sanitizedSubmission, pdfBytes);
   } catch (error) {
-    console.error('Unable to process parish registration submission.', error);
+    logFunctionError('parish-registration', event, error, {
+      validationErrorCount: validationErrors.length,
+    });
     return generateJsonResponse(event, 500, { message: 'Unable to submit parish registration.' });
   }
 
