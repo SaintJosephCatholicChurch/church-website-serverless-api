@@ -125,10 +125,9 @@ async function warmUsccbSession(page) {
     timeout: 60000,
   });
 
-  await page.waitForFunction(
-    () => document.body && !document.body.innerText.includes('Checking connection'),
-    { timeout: 60000 },
-  );
+  await page.waitForFunction(() => document.body && !document.body.innerText.includes('Checking connection'), {
+    timeout: 60000,
+  });
 }
 
 async function fetchTextThroughBrowser(page, url) {
