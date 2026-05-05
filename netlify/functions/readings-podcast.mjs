@@ -42,14 +42,14 @@ async function getPodcastUrlFromPage(event, date, page) {
 
   const podcastPageText = await podcastsResponse.text();
   const podcastPageMatchWithYear = new RegExp(
-    `<a href="(\/podcasts\/audio\/daily-mass-reading-podcast-${date}-${getLectionaryYear()}[a-zA-Z0-9_-]*)">`
+    `<a href="(\/podcasts\/audio\/daily-mass-reading-podcast-${date}-${getLectionaryYear()}[a-zA-Z0-9_-]*)">`,
   ).exec(podcastPageText);
   if (podcastPageMatchWithYear && podcastPageMatchWithYear.length === 2) {
     return podcastPageMatchWithYear[1];
   }
 
   const podcastPageMatch = new RegExp(
-    `<a href="(\/podcasts\/audio\/daily-mass-reading-podcast-${date}[a-zA-Z0-9_-]*)">`
+    `<a href="(\/podcasts\/audio\/daily-mass-reading-podcast-${date}[a-zA-Z0-9_-]*)">`,
   ).exec(podcastPageText);
   if (!podcastPageMatch || podcastPageMatch.length !== 2) {
     return null;
@@ -96,7 +96,7 @@ export const handler = async (event) => {
       200,
       JSON.stringify({
         url: match[1],
-      })
+      }),
     );
   } catch (error) {
     logFunctionError('readings-podcast', event, error);
