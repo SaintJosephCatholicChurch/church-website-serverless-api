@@ -37,6 +37,14 @@ function normalizeBodyForLog(body) {
   return body.length > MAX_LOGGED_BODY_LENGTH ? `${body.slice(0, MAX_LOGGED_BODY_LENGTH)}...` : body;
 }
 
+function getHeadersForLog(headers) {
+  if (!headers || typeof headers.entries !== 'function') {
+    return {};
+  }
+
+  return Object.fromEntries(headers.entries());
+}
+
 export function generateAccessControlAllowOrigin(event) {
   const origin = getHeaderValue(event?.headers, 'origin');
   if (/https:\/\/[a-z]+\.stjosephchurchbluffton\.org/i.test(origin)) {
@@ -81,5 +89,25 @@ export function logFunctionError(functionName, event, error, details = {}) {
     ...details,
     errorMessage: error instanceof Error ? error.message : String(error),
     errorStack: error instanceof Error ? error.stack : undefined,
+  });
+}
+
+export async function logFetchResponseError(functionName, event, response, details = {}) {
+  let responseBody = '';
+
+  try {
+    responseBody = normalizeBodyForLog(await response.text());
+  } catch (error) {
+    responseBody = `Unable to read upstream response body: ${error instanceof Error ? error.message : String(error)}`;
+  }
+
+  console.error(`${functionName} upstream fetch returned non-ok response.`, {
+    ...createRequestLogContext(event),
+    ...details,
+    upstreamStatus: response.status,
+    upstreamStatusText: response.statusText,
+    upstreamUrl: response.url,
+    upstreamHeaders: getHeadersForLog(response.headers),
+    upstreamBody: responseBody,
   });
 }

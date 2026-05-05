@@ -1,6 +1,6 @@
 import fetch from 'node-fetch';
 import { format } from 'date-fns';
-import { generateResponse, logFunctionError } from './util/response.mjs';
+import { generateResponse, logFetchResponseError, logFunctionError } from './util/response.mjs';
 
 function getLectionaryYear(date = new Date()) {
   const liturgicalYear = getLiturgicalYear(date);
@@ -35,8 +35,14 @@ function getFirstAdventSunday(christmas) {
 }
 
 async function getPodcastUrlFromPage(event, date, page) {
-  const podcastsResponse = await fetch(`https://bible.usccb.org/podcasts/audio?page=${page}`);
+  const podcastsPageUrl = `https://bible.usccb.org/podcasts/audio?page=${page}`;
+  const podcastsResponse = await fetch(podcastsPageUrl);
   if (!podcastsResponse.ok) {
+    await logFetchResponseError('readings-podcast', event, podcastsResponse, {
+      upstreamRequestUrl: podcastsPageUrl,
+      page,
+      date,
+    });
     return generateResponse(event, 500, 'Failed to fetch podcasts list page');
   }
 
@@ -79,8 +85,13 @@ export const handler = async (event) => {
       return podcastUrl;
     }
 
-    const response = await fetch(`https://bible.usccb.org${podcastUrl}`);
+    const podcastPageUrl = `https://bible.usccb.org${podcastUrl}`;
+    const response = await fetch(podcastPageUrl);
     if (!response.ok) {
+      await logFetchResponseError('readings-podcast', event, response, {
+        upstreamRequestUrl: podcastPageUrl,
+        podcastUrl,
+      });
       return generateResponse(event, 500, 'Failed to fetch podcast page');
     }
 
