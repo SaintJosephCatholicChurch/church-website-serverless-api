@@ -1,19 +1,16 @@
-import fetch from 'node-fetch';
-import { generateResponse, logFetchResponseError, logFunctionError } from './util/response.mjs';
+import { readFileSync } from 'node:fs';
+import { generateResponse, logFunctionError } from './util/response.mjs';
 
 export const handler = async (event) => {
   try {
-    const response = await fetch('https://bible.usccb.org/readings.rss');
-    if (!response.ok) {
-      await logFetchResponseError('readings', event, response, {
-        upstreamRequestUrl: 'https://bible.usccb.org/readings.rss',
-      });
-      return generateResponse(event, 500, 'Failed to fetch readings');
+    const storedData = JSON.parse(readFileSync(new URL('./data/readings.json', import.meta.url), 'utf8'));
+    if (typeof storedData.body !== 'string' || storedData.body.trim() === '') {
+      throw new Error('Stored readings feed is empty.');
     }
 
-    return generateResponse(event, 200, await response.text());
+    return generateResponse(event, 200, storedData.body);
   } catch (error) {
     logFunctionError('readings', event, error);
-    return generateResponse(event, 500, 'Failed to fetch readings');
+    return generateResponse(event, 500, 'Failed to load readings');
   }
 };

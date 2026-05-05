@@ -13,7 +13,8 @@
   },
   "homepage": "https://github.com/SaintJosephCatholicChurch/church-website-serverless-api#readme",
   "scripts": {
-    "live": "node ./scripts/live.mjs -ci"
+    "live": "node ./scripts/live.mjs -ci",
+    "readings": "node ./scripts/readings.mjs -ci"
   },
   "dependencies": {
     "@sparticuz/chromium": "143.0.4",

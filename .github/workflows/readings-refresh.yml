@@ -1,0 +1,49 @@
+name: Readings Refresh
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '45 10 * * *'
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/readings-refresh.yml'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'scripts/readings.mjs'
+
+permissions:
+  contents: write
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          cache: npm
+          cache-dependency-path: package-lock.json
+          node-version: 22
+
+      - name: Install
+        run: npm install --no-save
+        env:
+          PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: 'true'
+
+      - name: Refresh readings data
+        uses: KaneFreeman/puppeteer-headful@v18.20.2
+        timeout-minutes: 5
+        with:
+          args: npm run readings
+
+      - name: Commit
+        uses: EndBug/add-and-commit@v9
+        with:
+          add: 'netlify/functions/data/readings.json netlify/functions/data/readings-podcast.json'
+          default_author: github_actions
+          message: 'chore: refresh readings data'
