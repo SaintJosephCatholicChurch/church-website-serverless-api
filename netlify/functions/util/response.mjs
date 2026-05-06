@@ -47,7 +47,7 @@ function getHeadersForLog(headers) {
 
 export function generateAccessControlAllowOrigin(event) {
   const origin = getHeaderValue(event?.headers, 'origin');
-  if (/https:\/\/[a-z]+\.stjosephchurchbluffton\.org/i.test(origin)) {
+  if (/https:\/\/[a-z]+\.stjosephchurchbluffton\.org/i.test(origin) || /http:\/\/localhost:3000/i.test(origin)) {
     return origin;
   }
 
